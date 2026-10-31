@@ -1,0 +1,14 @@
+[project]
+name = "ocr"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "arabic-reshaper>=3.0.1",
+    "easyocr>=1.7.2",
+    "numpy>=2.5.4",
+    "pillow>=13.0.0",
+    "pytesseract>=0.3.13",
+    "python-bidi>=0.6.12",
+]
