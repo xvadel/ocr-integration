@@ -140,7 +140,8 @@ def m_pdfplumber(pdf, **_):
 def m_pdfplumber_bidi(pdf, **_):
     from bidi.algorithm import get_display
     raw = m_pdfplumber(pdf)
-    return "\n".join(get_display(unicodedata.normalize("NFKC", ln)) for ln in raw.splitlines())
+    # الترتيب مهم: bidi الأول ثم NFKC. لو عكسناهم، حرفا (لا / لأ / لإ) بيتبدلوا (ال / األ / اإل)
+    return "\n".join(unicodedata.normalize("NFKC", get_display(ln)) for ln in raw.splitlines())
 
 
 def m_tesseract(pdf, dpi, psm, tess_lang, **_):
