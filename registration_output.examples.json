@@ -1,0 +1,85 @@
+{
+  "accepted": {
+    "schema_version": "0.1",
+    "submission_id": "reg_20261101_0001",
+    "created_at": "2026-11-01T12:00:00Z",
+    "test_data": true,
+    "status": "accepted",
+    "reasons": [],
+    "document": {
+      "type": "commercial_register", "file_format": "pdf", "pdf_kind": "digital",
+      "pages": 1, "page_used": 1,
+      "quality": { "score": 0.97, "issues": [] }
+    },
+    "extraction": {
+      "text_method": "text_layer", "engine": "pdfplumber_bidi", "languages": ["ar", "en"],
+      "ocr_confidence_mean": null, "duration_ms": 90
+    },
+    "fields": {
+      "company_name":    { "value": "شركة الدلتا للأدوات المكتبية", "raw": "شركة الدلتا للأدوات المكتبية", "status": "ok", "confidence": null, "grounded": true, "issues": [], "page": 1 },
+      "legal_form":      { "value": "شركة ذات مسئولية محدودة", "raw": "شركة ذات مسئولية محدودة", "code": "llc", "status": "ok", "confidence": null, "grounded": true, "issues": [], "page": 1 },
+      "register_number": { "value": "244083", "raw": "٢٤٤٠٨٣", "status": "ok", "confidence": null, "grounded": true, "issues": [], "page": 1 },
+      "issue_date":      { "value": "2015-07-18", "raw": "١٨/٠٧/٢٠١٥", "status": "ok", "confidence": null, "grounded": true, "issues": [], "page": 1 },
+      "expiry_date":     { "value": "2020-07-18", "raw": "١٨/٠٧/٢٠٢٠", "status": "ok", "confidence": null, "grounded": true, "issues": [], "page": 1 },
+      "activity":        { "value": "تجارة الأدوات المكتبية والقرطاسية", "raw": "تجارة الأدوات المكتبية والقرطاسية", "status": "ok", "confidence": null, "grounded": true, "issues": [], "page": 1 },
+      "governorate":     { "value": "الإسكندرية", "raw": "الإسكندرية", "status": "ok", "confidence": null, "grounded": true, "issues": [], "page": 1 },
+      "address":         { "value": "18 شارع الحرية، سموحة", "raw": "١٨ شارع الحرية، سموحة", "status": "ok", "confidence": null, "grounded": true, "issues": [], "page": 1 },
+      "capital":         { "value": 1000000, "raw": "١٬٠٠٠٬٠٠٠ جنيه مصري", "unit": "EGP", "status": "ok", "confidence": null, "grounded": true, "issues": [], "page": 1 },
+      "manager":         { "value": "أحمد يوسف النجار", "raw": "أحمد يوسف النجار", "status": "ok", "confidence": null, "grounded": true, "issues": [], "page": 1 },
+      "tax_id":          { "value": "961946976", "raw": "٩٦١-٩٤٦-٩٧٦", "status": "ok", "confidence": null, "grounded": true, "issues": [], "page": 1 },
+      "issuing_office":  { "value": "مكتب السجل التجاري - سموحة", "raw": "مكتب السجل التجاري - سموحة", "status": "ok", "confidence": null, "grounded": true, "issues": [], "page": 1 }
+    },
+    "raw_text": "نموذج وهمي - سجل تجاري ... (النص الكامل)",
+    "review": { "required": false, "fields_to_review": [], "reviewed_by": null, "reviewed_at": null }
+  },
+
+  "needs_review": {
+    "schema_version": "0.1",
+    "submission_id": "reg_20261101_0002",
+    "created_at": "2026-11-01T12:05:00Z",
+    "test_data": true,
+    "status": "needs_review",
+    "reasons": ["issue_date:not_grounded", "issue_date:format_mismatch"],
+    "document": {
+      "type": "commercial_register", "file_format": "image", "pdf_kind": null,
+      "pages": 1, "page_used": 1,
+      "quality": { "score": 0.61, "issues": ["blurry", "skewed"] }
+    },
+    "extraction": {
+      "text_method": "ocr", "engine": "easyocr", "languages": ["ar", "en"],
+      "ocr_confidence_mean": 0.79, "duration_ms": 13100
+    },
+    "fields": {
+      "company_name":    { "value": "مؤسسة الدلتا للتجارة والتوزيع", "raw": "مؤسسة الدلتا للتجارة والتوزيع", "status": "ok", "confidence": 0.93, "grounded": true, "issues": [], "page": 1 },
+      "register_number": { "value": "790077", "raw": "٧٩٠٧٧٠", "status": "ok", "confidence": 0.88, "grounded": true, "issues": [], "page": 1 },
+      "issue_date":      { "value": null, "raw": "٢٠١٠٨/٢٠١٩", "status": "suspect", "confidence": 0.41, "grounded": true, "issues": ["format_mismatch", "slash_read_as_digit"], "page": 1 },
+      "governorate":     { "value": "الشرقية", "raw": "الشرقية", "status": "ok", "confidence": 0.9, "grounded": true, "issues": [], "page": 1 }
+    },
+    "raw_text": null,
+    "review": { "required": true, "fields_to_review": ["issue_date"], "reviewed_by": null, "reviewed_at": null }
+  },
+
+  "rejected": {
+    "schema_version": "0.1",
+    "submission_id": "reg_20261101_0003",
+    "created_at": "2026-11-01T12:10:00Z",
+    "test_data": true,
+    "status": "rejected",
+    "reasons": ["image_quality_too_low", "core_fields_missing"],
+    "document": {
+      "type": "unknown", "file_format": "image", "pdf_kind": null, "pages": 1,
+      "quality": { "score": 0.18, "issues": ["blurry", "low_resolution", "noisy"] }
+    },
+    "extraction": {
+      "text_method": "ocr", "engine": "tesseract", "languages": ["ara", "eng"],
+      "ocr_confidence_mean": 0.0, "duration_ms": 640
+    },
+    "fields": {
+      "company_name":    { "value": null, "raw": null, "status": "missing", "confidence": null, "grounded": false, "issues": ["not_found"] },
+      "register_number": { "value": null, "raw": null, "status": "missing", "confidence": null, "grounded": false, "issues": ["not_found"] },
+      "issue_date":      { "value": null, "raw": null, "status": "missing", "confidence": null, "grounded": false, "issues": ["not_found"] }
+    },
+    "raw_text": "",
+    "review": { "required": false, "fields_to_review": [], "reviewed_by": null, "reviewed_at": null }
+  }
+}
