@@ -126,9 +126,23 @@ def main():
     if not images:
         sys.exit("مفيش صور في المجلد.")
 
+    import pytesseract
     if args.tesseract_cmd:
-        import pytesseract
         pytesseract.pytesseract.tesseract_cmd = args.tesseract_cmd
+
+    # تأكد إن حزم اللغات متثبتة. Tesseract لو لقى لغة ناقصة بيكمل بالباقي
+    # من غير خطأ (يعني ara ناقصة = قراءة العربي بنموذج إنجليزي = حروف لاتينية عشوائية).
+    try:
+        available = set(pytesseract.get_languages(config=""))
+    except Exception as e:
+        sys.exit(f"مقدرتش أشغّل Tesseract: {e}\nتأكد من التثبيت أو استخدم --tesseract-cmd")
+    missing = [l for l in args.tess_lang.split("+") if l not in available]
+    if missing:
+        sys.exit(
+            f"حزم اللغات الناقصة في Tesseract: {', '.join(missing)}\n"
+            f"المتاح عندك: {', '.join(sorted(available))}\n"
+            "نزّل ara.traineddata وحطه في مجلد tessdata (أو أعد التثبيت واختر Arabic)."
+        )
 
     import easyocr
     print("تحميل نموذج EasyOCR (أول مرة هينزّل الملفات)...")

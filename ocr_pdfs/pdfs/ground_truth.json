@@ -1,0 +1,218 @@
+{
+  "sample_01_clean.jpg": {
+    "variant": "clean",
+    "digits": "western",
+    "fields": {
+      "company_name": "شركة النور للخدمات اللوجستية",
+      "legal_form": "شركة مساهمة مصرية",
+      "register_number": "621097",
+      "issue_date": "02/02/2024",
+      "activity": "النقل والتخزين والخدمات اللوجستية",
+      "governorate": "دمياط",
+      "address": "8 شارع الجلاء، دمياط الجديدة",
+      "capital": "100,000 جنيه مصري",
+      "manager": "أحمد محمد عيسى",
+      "tax_id": "940-648-196",
+      "expiry_date": "02/02/2029",
+      "office": "مكتب السجل التجاري - دمياط الجديدة"
+    }
+  },
+  "sample_02_scan.jpg": {
+    "variant": "scan",
+    "digits": "arabic-indic",
+    "fields": {
+      "company_name": "شركة الدلتا للأدوات المكتبية",
+      "legal_form": "شركة ذات مسئولية محدودة",
+      "register_number": "٢٤٤٠٨٣",
+      "issue_date": "١٨/٠٧/٢٠١٥",
+      "activity": "تجارة الأدوات المكتبية والقرطاسية",
+      "governorate": "الإسكندرية",
+      "address": "٨١ شارع الحرية، سموحة",
+      "capital": "١٬٠٠٠٬٠٠٠ جنيه مصري",
+      "manager": "أحمد يوسف النجار",
+      "tax_id": "١٦٠-٩٤٦-٦٧٩",
+      "expiry_date": "١٨/٠٧/٢٠٢٠",
+      "office": "مكتب السجل التجاري - سموحة"
+    }
+  },
+  "sample_03_phone.jpg": {
+    "variant": "phone",
+    "digits": "western",
+    "fields": {
+      "company_name": "شركة الفجر لتكنولوجيا المعلومات",
+      "legal_form": "شركة ذات مسئولية محدودة",
+      "register_number": "597472",
+      "issue_date": "14/03/2018",
+      "activity": "تطوير البرمجيات وخدمات تكنولوجيا المعلومات",
+      "governorate": "الجيزة",
+      "address": "105 شارع الحرية، الدقي",
+      "capital": "100,000 جنيه مصري",
+      "manager": "محمد يوسف النجار",
+      "tax_id": "653-220-684",
+      "expiry_date": "14/03/2023",
+      "office": "مكتب السجل التجاري - الدقي"
+    }
+  },
+  "sample_04_bad.jpg": {
+    "variant": "bad",
+    "digits": "arabic-indic",
+    "fields": {
+      "company_name": "شركة الوادي للتجارة والتوزيع",
+      "legal_form": "شركة ذات مسئولية محدودة",
+      "register_number": "٦٢٤٠٠٦",
+      "issue_date": "٢٢/٠٩/٢٠٢١",
+      "activity": "تجارة وتوزيع السلع الاستهلاكية",
+      "governorate": "الإسكندرية",
+      "address": "١١٩ شارع التحرير، سموحة",
+      "capital": "٢٥٠٬٠٠٠ جنيه مصري",
+      "manager": "خالد مصطفى فؤاد",
+      "tax_id": "٥٣٧-٨٩٥-٤٢١",
+      "expiry_date": "٢٢/٠٩/٢٠٢٦",
+      "office": "مكتب السجل التجاري - سموحة"
+    }
+  },
+  "sample_05_clean.jpg": {
+    "variant": "clean",
+    "digits": "western",
+    "fields": {
+      "company_name": "شركة الشروق للمستلزمات الطبية",
+      "legal_form": "شركة تضامن",
+      "register_number": "182975",
+      "issue_date": "10/10/2021",
+      "activity": "تجارة المستلزمات الطبية",
+      "governorate": "الشرقية",
+      "address": "97 شارع الثورة، الزقازيق",
+      "capital": "100,000 جنيه مصري",
+      "manager": "حسن علي السيد",
+      "tax_id": "174-220-624",
+      "expiry_date": "10/10/2026",
+      "office": "مكتب السجل التجاري - الزقازيق"
+    }
+  },
+  "sample_06_scan.jpg": {
+    "variant": "scan",
+    "digits": "arabic-indic",
+    "fields": {
+      "company_name": "مؤسسة الدلتا للتجارة والتوزيع",
+      "legal_form": "منشأة فردية",
+      "register_number": "٨٩٠٧٧٠",
+      "issue_date": "٢٠/٠٨/٢٠١٩",
+      "activity": "تجارة وتوزيع السلع الاستهلاكية",
+      "governorate": "الشرقية",
+      "address": "١٢ شارع الثورة، الزقازيق",
+      "capital": "٥٠٠٬٠٠٠ جنيه مصري",
+      "manager": "محمد أحمد رمضان",
+      "tax_id": "٦٩٣-٩١٦-٥٦٧",
+      "expiry_date": "٢٠/٠٨/٢٠٢٤",
+      "office": "مكتب السجل التجاري - الزقازيق"
+    }
+  },
+  "sample_07_phone.jpg": {
+    "variant": "phone",
+    "digits": "western",
+    "fields": {
+      "company_name": "مؤسسة الأمل للتسويق والدعاية",
+      "legal_form": "منشأة فردية",
+      "register_number": "132783",
+      "issue_date": "12/01/2024",
+      "activity": "خدمات التسويق والدعاية والإعلان",
+      "governorate": "دمياط",
+      "address": "64 شارع الجمهورية، دمياط الجديدة",
+      "capital": "100,000 جنيه مصري",
+      "manager": "خالد محمود الشافعي",
+      "tax_id": "572-463-272",
+      "expiry_date": "12/01/2029",
+      "office": "مكتب السجل التجاري - دمياط الجديدة"
+    }
+  },
+  "sample_08_bad.jpg": {
+    "variant": "bad",
+    "digits": "arabic-indic",
+    "fields": {
+      "company_name": "شركة المستقبل للمقاولات العامة",
+      "legal_form": "شركة تضامن",
+      "register_number": "٣٠١٩٤٥",
+      "issue_date": "٠٩/٠٣/٢٠٢٢",
+      "activity": "مقاولات عامة وأعمال البناء",
+      "governorate": "دمياط",
+      "address": "٩١ شارع التحرير، دمياط الجديدة",
+      "capital": "٢٥٠٬٠٠٠ جنيه مصري",
+      "manager": "علي مصطفى فؤاد",
+      "tax_id": "٩٣٨-٥٤٠-٩٨٤",
+      "expiry_date": "٠٩/٠٣/٢٠٢٧",
+      "office": "مكتب السجل التجاري - دمياط الجديدة"
+    }
+  },
+  "sample_09_clean.jpg": {
+    "variant": "clean",
+    "digits": "western",
+    "fields": {
+      "company_name": "شركة النور للتوريدات الهندسية",
+      "legal_form": "شركة تضامن",
+      "register_number": "649434",
+      "issue_date": "10/01/2018",
+      "activity": "توريدات هندسية واستيراد وتصدير",
+      "governorate": "الجيزة",
+      "address": "73 شارع الثورة، الدقي",
+      "capital": "100,000 جنيه مصري",
+      "manager": "إبراهيم يوسف السيد",
+      "tax_id": "249-529-647",
+      "expiry_date": "10/01/2023",
+      "office": "مكتب السجل التجاري - الدقي"
+    }
+  },
+  "sample_10_scan.jpg": {
+    "variant": "scan",
+    "digits": "arabic-indic",
+    "fields": {
+      "company_name": "شركة النيل للتسويق والدعاية",
+      "legal_form": "شركة تضامن",
+      "register_number": "٢٠٩٨٦٨",
+      "issue_date": "١٣/٠٢/٢٠٢٠",
+      "activity": "خدمات التسويق والدعاية والإعلان",
+      "governorate": "دمياط",
+      "address": "٩ شارع النصر، دمياط الجديدة",
+      "capital": "٥٠٠٬٠٠٠ جنيه مصري",
+      "manager": "محمود محمد سليمان",
+      "tax_id": "٥٩٣-٧٤٩-٥١٠",
+      "expiry_date": "١٣/٠٢/٢٠٢٥",
+      "office": "مكتب السجل التجاري - دمياط الجديدة"
+    }
+  },
+  "sample_11_phone.jpg": {
+    "variant": "phone",
+    "digits": "western",
+    "fields": {
+      "company_name": "شركة المحروسة للتجارة والتوزيع",
+      "legal_form": "شركة ذات مسئولية محدودة",
+      "register_number": "228054",
+      "issue_date": "04/06/2022",
+      "activity": "تجارة وتوزيع السلع الاستهلاكية",
+      "governorate": "الجيزة",
+      "address": "79 شارع التحرير، الدقي",
+      "capital": "100,000 جنيه مصري",
+      "manager": "خالد عمر النجار",
+      "tax_id": "728-126-172",
+      "expiry_date": "04/06/2027",
+      "office": "مكتب السجل التجاري - الدقي"
+    }
+  },
+  "sample_12_bad.jpg": {
+    "variant": "bad",
+    "digits": "arabic-indic",
+    "fields": {
+      "company_name": "شركة التقدم للتسويق والدعاية",
+      "legal_form": "شركة تضامن",
+      "register_number": "٢٨٧٦١٧",
+      "issue_date": "٠٣/٠٣/٢٠١٨",
+      "activity": "خدمات التسويق والدعاية والإعلان",
+      "governorate": "القليوبية",
+      "address": "٦٢ شارع الحرية، بنها",
+      "capital": "١٠٠٬٠٠٠ جنيه مصري",
+      "manager": "إبراهيم أحمد الشافعي",
+      "tax_id": "٢٠٤-٨٦٧-٤٥٠",
+      "expiry_date": "٠٣/٠٣/٢٠٢٣",
+      "office": "مكتب السجل التجاري - بنها"
+    }
+  }
+}
