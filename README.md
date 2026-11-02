@@ -9,61 +9,61 @@ A high-accuracy, production-grade CLI processing pipeline for Egyptian Commercia
 ### A. End-to-End Processing Architecture
 ```mermaid
 flowchart TD
-    In([Document Input: PDF or Image]) --> KindCheck{File Type?}
+    In(["Document Input: PDF or Image"]) --> KindCheck{File Type?}
 
     %% PDF PATH
-    KindCheck -->|PDF| DetectPDF[detect_pdf_kind.py]
+    KindCheck -->|PDF| DetectPDF["detect_pdf_kind.py"]
     DetectPDF --> PDFKind{Classification}
-    PDFKind -->|digital| PyMuPDF[PyMuPDF Direct Extraction ~100ms]
-    PDFKind -->|digital_garbled| Bidi[pdfplumber + python-bidi Reordering]
-    PDFKind -->|scanned| Render[Render Pages to Image @ 250 DPI]
+    PDFKind -->|digital| PyMuPDF["PyMuPDF Direct Extraction ~100ms"]
+    PDFKind -->|digital_garbled| Bidi["pdfplumber + python-bidi Reordering"]
+    PDFKind -->|scanned| Render["Render Pages to Image @ 250 DPI"]
 
     %% IMAGE PATH
-    KindCheck -->|Image| CVPreprocess[OpenCV Preprocessing Layer]
+    KindCheck -->|Image| CVPreprocess["OpenCV Preprocessing Layer"]
     Render --> CVPreprocess
 
     %% OPENCV LAYER
-    subgraph CV [OpenCV Preprocessing Layer & Quality Gate]
-        CVPreprocess --> Deskew[Hough Baseline Deskewing]
-        Deskew --> Flat[Morphological Illumination Flattening]
-        Flat --> CLAHE[CLAHE Contrast Enhancement & Denoising]
-        CLAHE --> QScore[Sobel p95 Edge Sharpness & Quality Scoring]
+    subgraph CV ["OpenCV Preprocessing Layer & Quality Gate"]
+        CVPreprocess --> Deskew["Hough Baseline Deskewing"]
+        Deskew --> Flat["Morphological Illumination Flattening"]
+        Flat --> CLAHE["CLAHE Contrast Enhancement & Denoising"]
+        CLAHE --> QScore["Sobel p95 Edge Sharpness & Quality Scoring"]
         QScore --> QGate{quality.score < 0.35?}
     end
 
-    QGate -->|Critically Low / Corrupted| RejectDirect[Route to REJECTED: image_quality_too_low]
+    QGate -->|Critically Low / Corrupted| RejectDirect["Route to REJECTED: image_quality_too_low"]
     QGate -->|Passable Quality| OCREngine{OCR Execution}
-    OCREngine -->|Fast Path| Tess[Tesseract PSM 4 ara+eng]
+    OCREngine -->|Fast Path| Tess["Tesseract PSM 4 ara+eng"]
     Tess --> CheckCore{Core Fields Found?}
-    CheckCore -->|Yes| RawText[Raw Text Stream]
-    CheckCore -->|No: Indic / Complex| EasyOCR[EasyOCR Deep Learning Fallback]
+    CheckCore -->|Yes| RawText["Raw Text Stream"]
+    CheckCore -->|No: Indic / Complex| EasyOCR["EasyOCR Deep Learning Fallback"]
     EasyOCR --> RawText
 
     PyMuPDF --> RawText
     Bidi --> RawText
 
     %% EXTRACTION & NORMALIZATION
-    subgraph Extraction [Field Extraction, Normalization & Grounding]
-        RawText --> Extractor[Regex & Anchor Field Extractor]
-        Extractor --> Norm[Indic-to-Western Digits | ISO-8601 Dates | Numeric Capital]
+    subgraph Extraction ["Field Extraction, Normalization & Grounding"]
+        RawText --> Extractor["Regex & Anchor Field Extractor"]
+        Extractor --> Norm["Indic-to-Western Digits | ISO-8601 Dates | Numeric Capital"]
         Norm --> GroundCheck{Physically Grounded in Raw Text?}
-        GroundCheck -->|Present| GroundOk[grounded: true, status: ok]
-        GroundCheck -->|Absent| GroundFail[grounded: false, status: suspect]
+        GroundCheck -->|Present| GroundOk["grounded: true, status: ok"]
+        GroundCheck -->|Absent| GroundFail["grounded: false, status: suspect"]
     end
 
-    GroundOk --> Validator[JSON Schema Validator: Draft 2020-12]
+    GroundOk --> Validator["JSON Schema Validator: Draft 2020-12"]
     GroundFail --> Validator
     RejectDirect --> Validator
 
     %% DECISION ROUTING
-    subgraph PriorityRouting [Priority Decision Routing]
+    subgraph PriorityRouting ["Priority Decision Routing"]
         Validator --> RouteCheck{Priority Evaluation}
-        RouteCheck -->|1. Quality < 0.35 OR Core Missing| P1[STATUS: REJECTED\nreview.required = false]
-        RouteCheck -->|2. Suspect Field OR Un-grounded OR Timeline Error| P2[STATUS: NEEDS_REVIEW\nreview.required = true\nfields_to_review populated]
-        RouteCheck -->|3. Fully Valid & Grounded| P3[STATUS: ACCEPTED\nreview.required = false\nreasons = empty]
+        RouteCheck -->|1. Quality < 0.35 OR Core Missing| P1["STATUS: REJECTED<br>review.required = false"]
+        RouteCheck -->|2. Suspect Field OR Un-grounded OR Timeline Error| P2["STATUS: NEEDS_REVIEW<br>review.required = true<br>fields_to_review populated"]
+        RouteCheck -->|3. Fully Valid & Grounded| P3["STATUS: ACCEPTED<br>review.required = false<br>reasons = empty"]
     end
 
-    P1 --> OutJSON([Final Validated JSON Payload])
+    P1 --> OutJSON(["Final Validated JSON Payload"])
     P2 --> OutJSON
     P3 --> OutJSON
 ```
@@ -95,16 +95,16 @@ sequenceDiagram
 ### C. OpenCV Quality Gate Sharpness vs. OCR Confidence
 ```mermaid
 flowchart LR
-    subgraph BadInput [Degraded / Blurred Input]
-        BlurImg[Blurred Scan p95 ~ 126] --> BlindOCR[Blind OCR Execution]
-        BlindOCR --> Hallucination[Hallucinated Digits: false ocr_confidence 0.88]
-        Hallucination --> BadData[(Data Poisoning / False Pass)]
+    subgraph BadInput ["Degraded / Blurred Input"]
+        BlurImg["Blurred Scan p95 ~ 126"] --> BlindOCR["Blind OCR Execution"]
+        BlindOCR --> Hallucination["Hallucinated Digits: false ocr_confidence 0.88"]
+        Hallucination --> BadData[("Data Poisoning / False Pass")]
     end
 
-    subgraph GateProtected [Protected Pipeline with OpenCV Gate]
-        BlurImg2[Blurred Scan p95 ~ 126] --> SobelGate[OpenCV Sobel p95 Assessment]
+    subgraph GateProtected ["Protected Pipeline with OpenCV Gate"]
+        BlurImg2["Blurred Scan p95 ~ 126"] --> SobelGate["OpenCV Sobel p95 Assessment"]
         SobelGate --> ScoreCheck{quality.score < 0.35?}
-        ScoreCheck -->|Yes: Abort in < 1s| EarlyReject[Direct REJECTED: image_quality_too_low]
+        ScoreCheck -->|Yes: Abort in < 1s| EarlyReject["Direct REJECTED: image_quality_too_low"]
     end
 ```
 
@@ -156,19 +156,19 @@ A frequent question regarding document processing pipelines is whether OpenCV (`
 
 ```mermaid
 flowchart TD
-    subgraph CPULayer [100% CPU Execution: Zero GPU Requirement]
-        CV[OpenCV cv2 v5.0.0\nSIMD / AVX2 Vectorized C++\n~100 ms execution]
-        MuPDF[PyMuPDF / pdfplumber\nNative C / Python Bidi\n~15 - 50 ms execution]
-        Tess[Tesseract OCR v5\nC++ Native SIMD Engine\n~1.4 s execution]
+    subgraph CPULayer ["100% CPU Execution: Zero GPU Requirement"]
+        CV["OpenCV cv2 v5.0.0<br>SIMD / AVX2 Vectorized C++<br>~100 ms execution"]
+        MuPDF["PyMuPDF / pdfplumber<br>Native C / Python Bidi<br>~15 - 50 ms execution"]
+        Tess["Tesseract OCR v5<br>C++ Native SIMD Engine<br>~1.4 s execution"]
     end
 
-    subgraph DeepLearningLayer [Deep Learning: Hybrid CPU / GPU Execution]
-        Easy[EasyOCR CRAFT + ResNet\nDefault: CPU PyTorch Execution (~10 - 15 s)\nOptional: NVIDIA CUDA GPU (< 1.0 s)]
+    subgraph DeepLearningLayer ["Deep Learning: Hybrid CPU / GPU Execution"]
+        Easy["EasyOCR CRAFT + ResNet<br>Default: CPU PyTorch Execution (~10 - 15 s)<br>Optional: NVIDIA CUDA GPU (< 1.0 s)"]
     end
 
     CV --> Tess
     Tess -->|If Core Missing| Easy
-    MuPDF -->|Digital PDFs| OutPayload([Final Validated JSON])
+    MuPDF -->|Digital PDFs| OutPayload(["Final Validated JSON"])
 ```
 
 - **OpenCV (`cv2`) runs 100% on CPU:** OpenCV uses compiled C++ SIMD vectorization (AVX2/SSE4.2). Image transformations (deskewing, morphological filtering, CLAHE, and Sobel sharpness) execute in **~100 ms on a standard multi-core CPU**. No CUDA GPU or GPU drivers are required.
