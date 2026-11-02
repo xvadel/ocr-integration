@@ -1,0 +1,104 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Vendra registration output (v0.1, تجريبي)",
+  "description": "مخرج مسار التسجيل والـ OCR (مهمة 03) الذي يُسلَّم لمسار التحقق والمطابقة (مهمة 02).",
+  "type": "object",
+  "required": ["schema_version", "submission_id", "created_at", "status", "document", "extraction", "fields", "review"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": { "const": "0.1" },
+    "submission_id": { "type": "string", "minLength": 4 },
+    "created_at": { "type": "string", "format": "date-time" },
+    "test_data": { "type": "boolean", "description": "true لو البيانات تجريبية/اصطناعية" },
+    "status": {
+      "enum": ["accepted", "needs_review", "rejected"],
+      "description": "accepted: تُسلَّم تلقائيًا. needs_review: تنتظر مراجعة بشرية. rejected: مرفوضة وتُطلب إعادة رفع."
+    },
+    "reasons": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "أسباب الحالة، مثل: issue_date:not_grounded أو image_quality_too_low"
+    },
+    "document": {
+      "type": "object",
+      "required": ["type", "file_format", "pages"],
+      "additionalProperties": false,
+      "properties": {
+        "type": { "enum": ["commercial_register", "tax_card", "unknown"] },
+        "file_format": { "enum": ["image", "pdf"] },
+        "pdf_kind": { "enum": ["digital", "scanned", "digital_garbled", null] },
+        "pages": { "type": "integer", "minimum": 1 },
+        "page_used": { "type": "integer", "minimum": 1 },
+        "quality": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "score": { "type": "number", "minimum": 0, "maximum": 1 },
+            "issues": { "type": "array", "items": { "enum": ["blurry", "low_resolution", "skewed", "dark", "cropped", "noisy"] } }
+          }
+        }
+      }
+    },
+    "extraction": {
+      "type": "object",
+      "required": ["text_method"],
+      "additionalProperties": false,
+      "properties": {
+        "text_method": { "enum": ["text_layer", "ocr", "vision_llm", "none"] },
+        "engine": { "type": ["string", "null"], "description": "مثل pymupdf أو tesseract أو azure_read" },
+        "languages": { "type": "array", "items": { "type": "string" } },
+        "ocr_confidence_mean": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
+        "duration_ms": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "fields": {
+      "type": "object",
+      "required": ["company_name", "register_number", "issue_date"],
+      "additionalProperties": false,
+      "properties": {
+        "company_name": { "$ref": "#/$defs/field" },
+        "legal_form": { "$ref": "#/$defs/field" },
+        "register_number": { "$ref": "#/$defs/field" },
+        "issue_date": { "$ref": "#/$defs/field" },
+        "expiry_date": { "$ref": "#/$defs/field" },
+        "activity": { "$ref": "#/$defs/field" },
+        "governorate": { "$ref": "#/$defs/field" },
+        "address": { "$ref": "#/$defs/field" },
+        "capital": { "$ref": "#/$defs/field" },
+        "manager": { "$ref": "#/$defs/field" },
+        "tax_id": { "$ref": "#/$defs/field" },
+        "issuing_office": { "$ref": "#/$defs/field" }
+      }
+    },
+    "raw_text": { "type": ["string", "null"], "description": "النص الخام الناتج، للمراجعة وللتتبع" },
+    "review": {
+      "type": "object",
+      "required": ["required"],
+      "additionalProperties": false,
+      "properties": {
+        "required": { "type": "boolean" },
+        "fields_to_review": { "type": "array", "items": { "type": "string" } },
+        "reviewed_by": { "type": ["string", "null"] },
+        "reviewed_at": { "type": ["string", "null"], "format": "date-time" }
+      }
+    }
+  },
+  "$defs": {
+    "field": {
+      "type": "object",
+      "required": ["value", "status"],
+      "additionalProperties": false,
+      "properties": {
+        "value": { "type": ["string", "number", "null"], "description": "القيمة بعد التطبيع: أرقام عادية، تواريخ ISO، رأس المال رقم" },
+        "raw": { "type": ["string", "null"], "description": "القيمة كما قُرئت قبل التطبيع" },
+        "status": { "enum": ["ok", "suspect", "missing"] },
+        "confidence": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
+        "grounded": { "type": "boolean", "description": "هل القيمة موجودة في النص الخام؟" },
+        "issues": { "type": "array", "items": { "type": "string" } },
+        "page": { "type": "integer", "minimum": 1 },
+        "code": { "type": "string", "description": "كود موحد (مثلًا لـ legal_form: llc, jsc, sole_proprietorship, partnership)" },
+        "unit": { "type": "string", "description": "وحدة القيمة (مثل EGP لرأس المال)" }
+      }
+    }
+  }
+}
