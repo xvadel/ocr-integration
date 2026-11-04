@@ -720,12 +720,13 @@ class RegistrationPipeline:
     """Full end-to-end processing pipeline for commercial register documents."""
 
     def __init__(self, engine: str = "auto", dpi: int = 250, tesseract_cmd: Optional[str] = None):
-        self.engine = engine  # 'auto', 'tesseract', 'easyocr', 'pymupdf'
+        self.engine = engine  # 'auto', 'tesseract', 'easyocr', 'paddleocr', 'pymupdf'
         self.dpi = dpi
         if tesseract_cmd:
             import pytesseract
             pytesseract.pytesseract.tesseract_cmd = tesseract_cmd
         self._easyocr_reader = None
+        self._paddle_ocr = None
 
         # Load Schema
         self.schema = json.loads(SCHEMA_PATH.read_text(encoding="utf-8"))
@@ -736,6 +737,158 @@ class RegistrationPipeline:
             import easyocr
             self._easyocr_reader = easyocr.Reader(["ar", "en"], gpu=False)
         return self._easyocr_reader
+
+    def _get_paddle_ocr(self):
+        """Initialize PaddleOCR once and reuse the model."""
+        if self._paddle_ocr is None:
+            try:
+                import torch  # Prevents Windows DLL loading order issue with albumentations/shm.dll
+            except ImportError:
+                pass
+            from paddleocr import PaddleOCR
+
+            self._paddle_ocr = PaddleOCR(
+                lang="ar",
+                ocr_version="PP-OCRv5",
+                use_doc_orientation_classify=False,
+                use_doc_unwarping=False,
+                use_textline_orientation=False
+            )
+
+        return self._paddle_ocr
+
+    def _run_paddleocr(self, image):
+        """Run PaddleOCR and return normalized text + mean confidence."""
+        ocr = self._get_paddle_ocr()
+        prediction = ocr.predict(input=image)
+
+        extracted_text = []
+        confidence_scores = []
+
+        for page in prediction:
+            payload = page.json
+
+            if isinstance(payload, str):
+                payload = json.loads(payload)
+
+            data = payload.get("res", payload)
+
+            texts = data.get("rec_texts", [])
+            scores = data.get("rec_scores", [])
+
+            for index, text in enumerate(texts):
+                if not text or not str(text).strip():
+                    continue
+
+                extracted_text.append(str(text).strip())
+
+                if index < len(scores):
+                    try:
+                        score = float(scores[index])
+                        if 0 <= score <= 1:
+                            confidence_scores.append(score)
+                    except (TypeError, ValueError):
+                        pass
+
+        raw_text = "\n".join(extracted_text)
+
+        confidence = (
+            round(sum(confidence_scores) / len(confidence_scores), 4)
+            if confidence_scores else 0.0
+        )
+
+        return raw_text, confidence
+
+    def _run_easyocr(self, image):
+        """Run EasyOCR and return normalized text + mean confidence."""
+        reader = self._get_easyocr_reader()
+
+        results = reader.readtext(
+            image,
+            detail=1,
+            paragraph=False
+        )
+
+        texts = []
+        scores = []
+
+        for result in results:
+            if len(result) < 3:
+                continue
+
+            text = str(result[1]).strip()
+            if text:
+                texts.append(text)
+
+            try:
+                score = float(result[2])
+                if score > 0:
+                    scores.append(score)
+            except (TypeError, ValueError):
+                pass
+
+        confidence = round(sum(scores) / len(scores), 4) if scores else 0.0
+
+        return "\n".join(texts), confidence
+
+    def _run_tesseract(self, image):
+        """Run Tesseract and return normalized text + mean confidence."""
+        import pytesseract
+
+        raw_text = pytesseract.image_to_string(
+            image,
+            lang="ara+eng",
+            config="--psm 4"
+        )
+
+        data = pytesseract.image_to_data(
+            image,
+            lang="ara+eng",
+            config="--psm 4",
+            output_type=pytesseract.Output.DICT
+        )
+
+        scores = []
+
+        for confidence, text in zip(data["conf"], data["text"]):
+            if str(confidence) == "-1" or not str(text).strip():
+                continue
+
+            try:
+                score = float(confidence) / 100.0
+                if score > 0:
+                    scores.append(score)
+            except (TypeError, ValueError):
+                pass
+
+        mean_confidence = (
+            round(sum(scores) / len(scores), 4)
+            if scores else 0.0
+        )
+
+        return raw_text, mean_confidence
+
+    def _get_core_fields_count(self, raw_text):
+        """Count how many required fields can be detected in OCR output."""
+        if not raw_text or not raw_text.strip():
+            return 0
+
+        extractor = DocumentFieldExtractor(
+            unicodedata.normalize("NFKC", raw_text)
+        )
+        fields = extractor.extract_all()
+
+        core_keys = [
+            "company_name",
+            "register_number",
+            "issue_date"
+        ]
+
+        return sum(
+            1 for key in core_keys
+            if fields.get(key, {}).get("value") is not None
+            and fields.get(key, {}).get("status") != "missing"
+        )
 
     def process_file(self, file_path: Union[str, Path], submission_id: Optional[str] = None) -> Dict[str, Any]:
         """Processes a single Image or PDF file and returns strict JSON output."""
@@ -815,36 +968,99 @@ class RegistrationPipeline:
             quality_score = quality["score"]
             quality_issues = quality["issues"]
 
-            # Run OCR
-            if chosen_ocr == "easyocr":
-                reader = self._get_easyocr_reader()
-                results = reader.readtext(preprocessed_cv, detail=1, paragraph=False)
-                raw_text = "\n".join(r[1] for r in results)
-                confs = [float(r[2]) for r in results if float(r[2]) > 0]
-                ocr_confidence_mean = round(sum(confs) / len(confs), 2) if confs else 0.0
-            else:
-                # Tesseract with PSM 4 (preserves tabular row order: Label | Value)
-                import pytesseract
-                raw_text = pytesseract.image_to_string(preprocessed_cv, lang="ara+eng", config="--psm 4")
-                data = pytesseract.image_to_data(preprocessed_cv, lang="ara+eng", output_type=pytesseract.Output.DICT)
-                confs = [float(c) for c, t in zip(data["conf"], data["text"]) if str(c) != "-1" and t.strip()]
-                ocr_confidence_mean = round(sum(confs) / (len(confs) * 100.0), 2) if confs else 0.0
+            # -------------------------------------------------------------
+            # OCR Engine Selection + Fallback
+            # -------------------------------------------------------------
 
-                # In auto mode, if Tesseract missed core fields and document is not critically degraded, fallback to EasyOCR
-                if self.engine == "auto" and quality_score >= 0.35:
-                    test_ext = DocumentFieldExtractor(unicodedata.normalize("NFKC", raw_text))
-                    test_fields = test_ext.extract_all()
-                    missing_core = any(
-                        test_fields.get(k, {}).get("status") == "missing" or test_fields.get(k, {}).get("value") is None
-                        for k in ["company_name", "register_number", "issue_date"]
+            ocr_engines = {
+                "paddleocr": self._run_paddleocr,
+                "easyocr": self._run_easyocr,
+                "tesseract": self._run_tesseract
+            }
+
+            # Auto mode:
+            # PaddleOCR -> EasyOCR -> Tesseract
+            if self.engine == "auto":
+                engine_order = [
+                    "paddleocr",
+                    "easyocr",
+                    "tesseract"
+                ]
+            else:
+                # Explicit engine selection: run only the requested engine.
+                engine_order = [self.engine]
+
+            best_result = None
+            best_engine = None
+            best_score = (-1, -1.0)
+
+            for engine_name in engine_order:
+                print(f"[OCR] Trying {engine_name}...")
+
+                try:
+                    candidate_text, candidate_confidence = ocr_engines[engine_name](
+                        preprocessed_cv
                     )
-                    if missing_core:
-                        reader = self._get_easyocr_reader()
-                        results = reader.readtext(preprocessed_cv, detail=1, paragraph=False)
-                        raw_text = "\n".join(r[1] for r in results)
-                        confs = [float(r[2]) for r in results if float(r[2]) > 0]
-                        ocr_confidence_mean = round(sum(confs) / len(confs), 2) if confs else 0.0
-                        used_engine = "easyocr"
+
+                    candidate_text = unicodedata.normalize(
+                        "NFKC",
+                        candidate_text or ""
+                    )
+
+                    core_count = self._get_core_fields_count(candidate_text)
+
+                    # Prefer more detected core fields.
+                    # If tied, prefer the higher OCR confidence.
+                    candidate_score = (
+                        core_count,
+                        candidate_confidence
+                    )
+
+                    print(
+                        f"[OCR] {engine_name}: "
+                        f"core_fields={core_count}/3, "
+                        f"confidence={candidate_confidence:.3f}, "
+                        f"text_length={len(candidate_text)}"
+                    )
+
+                    if candidate_score > best_score:
+                        best_score = candidate_score
+                        best_result = candidate_text
+                        best_engine = engine_name
+
+                    # All three core fields found: no need for fallback.
+                    if core_count == 3:
+                        print(f"[OCR] {engine_name} succeeded. Fallback skipped.")
+                        break
+
+                    if self.engine != "auto":
+                        break
+
+                    print(
+                        f"[OCR] {engine_name} did not detect all core fields. "
+                        "Trying fallback..."
+                    )
+
+                except Exception as error:
+                    print(f"[OCR ERROR] {engine_name}: {error}")
+
+                    if self.engine != "auto":
+                        raise
+
+                    print(f"[OCR] Moving to next fallback engine...")
+
+            # Use the best result among the attempted engines.
+            if best_result is None:
+                raise RuntimeError("All OCR engines failed to process the document.")
+
+            raw_text = best_result
+            ocr_confidence_mean = best_score[1]
+            used_engine = best_engine
+
+            print(
+                f"[OCR] Selected engine: {used_engine} "
+                f"(core fields: {best_score[0]}/3)"
+            )
 
             raw_text = unicodedata.normalize("NFKC", raw_text)
 
@@ -905,7 +1121,11 @@ def main():
     parser = argparse.ArgumentParser(description="Process Commercial Register documents with OCR and Validation.")
     parser.add_argument("path", type=Path, help="Input file (Image or PDF) or directory")
     parser.add_argument("--out", type=Path, default=None, help="Output JSON file or directory")
-    parser.add_argument("--engine", choices=["auto", "tesseract", "easyocr", "pymupdf"], default="auto")
+    parser.add_argument(
+        "--engine",
+        choices=["auto", "paddleocr", "tesseract", "easyocr", "pymupdf"],
+        default="auto"
+    )
     parser.add_argument("--dpi", type=int, default=250, help="Rendering DPI for PDF scans (200-300)")
     parser.add_argument("--tesseract-cmd", default=None, help="Path to tesseract binary")
     args = parser.parse_args()
