@@ -5,8 +5,19 @@ build/
 dist/
 wheels/
 *.egg-info
+*.log
+*.tmp
+.pytest_cache/
 
-# Virtual environments
-.venv
+# Output and scratch results
+result*.json
+out_*.json
+ocr_results/
+pdf_results/
+*_failures/
+
+# Virtual environments & model caches
+.venv/
 .paddlex/
 .easyocr/
+
