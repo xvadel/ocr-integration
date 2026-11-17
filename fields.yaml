@@ -1,0 +1,196 @@
+# Egyptian Commercial Register — Field Configuration
+# Each field defines anchors (Arabic label text found on forms),
+# type, validation pattern, and whether it is required.
+
+fields:
+  - name: company_name
+    label: "اسم الشركة / المنشأة"
+    type: text
+    required: true
+    anchors:
+      - "اسم الشركة / المنشأة"
+      - "اسم الشركة"
+      - "اسم المنشأة"
+      - "الاسم التجاري"
+    pattern: null
+
+  - name: legal_form
+    label: "الشكل القانوني"
+    type: enum
+    required: false
+    anchors:
+      - "الشكل القانوني"
+      - "الكيان القانوني"
+      - "نوع الشركة"
+    pattern: null
+    enum_values:
+      llc: "شركة ذات مسئولية محدودة"
+      jsc: "شركة مساهمة مصرية"
+      sole_proprietorship: "منشأة فردية"
+      partnership: "شركة تضامن"
+      limited_partnership: "شركة توصية بسيطة"
+
+  - name: register_number
+    label: "رقم السجل التجاري"
+    type: text
+    required: true
+    anchors:
+      - "رقم القيد بالسجل التجاري"
+      - "رقم القيد"
+      - "رقم الفيد"
+      - "رقم السجل التجاري"
+      - "رقم السجل"
+    pattern: "^\\d{1,10}$"
+
+  - name: unified_register_number
+    label: "الرقم الموحد للسجل التجاري"
+    type: text
+    required: false
+    anchors:
+      - "الرقم الموحد للسجل التجاري"
+      - "الرقم الموحد"
+    pattern: null
+
+  - name: national_entity_number
+    label: "الرقم القومي للمنشأة"
+    type: text
+    required: false
+    anchors:
+      - "الرقم القومي للمنشأة"
+      - "الرقم القومي للمنشاه"
+    pattern: null
+
+  - name: registration_level
+    label: "مستوى القيد"
+    type: text
+    required: false
+    anchors:
+      - "مستوى القيد"
+      - "مستوي القيد"
+    pattern: null
+
+  - name: issue_date
+    label: "تاريخ القيد"
+    type: date
+    required: true
+    anchors:
+      - "تاريخ القيد"
+      - "تاريخ الفيد"
+      - "تاريخ الإصدار"
+      - "تاريخ التسجيل"
+    pattern: "^\\d{4}-\\d{2}-\\d{2}$"
+
+  - name: expiry_date
+    label: "تاريخ الانتهاء"
+    type: date
+    required: false
+    anchors:
+      - "تاريخ آخر تجديد"
+      - "تاريخ اخر تجديد"
+      - "تاريخ انتهاء الصلاحية"
+      - "تاريخ الانتهاء"
+      - "تاريخ انتهاء القيد"
+    pattern: "^\\d{4}-\\d{2}-\\d{2}$"
+
+  - name: activity
+    label: "النشاط"
+    type: text
+    required: false
+    anchors:
+      - "النشاط"
+      - "الغرض"
+      - "نوع النشاط"
+    pattern: null
+
+  - name: governorate
+    label: "المحافظة"
+    type: enum
+    required: false
+    anchors:
+      - "المحافظة"
+      - "محافظة"
+    pattern: null
+    enum_values:
+      cairo: "القاهرة"
+      giza: "الجيزة"
+      alexandria: "الإسكندرية"
+      dakahlia: "الدقهلية"
+      sharqia: "الشرقية"
+      gharbia: "الغربية"
+      damietta: "دمياط"
+      qalyubia: "القليوبية"
+      port_said: "بورسعيد"
+      suez: "السويس"
+      ismailia: "الإسماعيلية"
+      beheira: "البحيرة"
+      kafr_el_sheikh: "كفر الشيخ"
+      monufia: "المنوفية"
+      beni_suef: "بني سويف"
+      faiyum: "الفيوم"
+      minya: "المنيا"
+      assiut: "أسيوط"
+      sohag: "سوهاج"
+      qena: "قنا"
+      luxor: "الأقصر"
+      aswan: "أسوان"
+      matrouh: "مطروح"
+      new_valley: "الوادي الجديد"
+      red_sea: "البحر الأحمر"
+      north_sinai: "شمال سيناء"
+      south_sinai: "جنوب سيناء"
+
+  - name: address
+    label: "العنوان"
+    type: text
+    required: false
+    anchors:
+      - "عنوان المركز الرئيسي"
+      - "عنوان المركز الرئيسى"
+      - "العنوان"
+      - "المقر"
+    pattern: null
+
+  - name: capital
+    label: "رأس المال"
+    type: number
+    required: false
+    anchors:
+      - "رأس المال"
+      - "رأس مال الشركة"
+      - "رأس مال"
+    pattern: "^[\\d,\\.]+$"
+
+  - name: manager
+    label: "المدير / المالك"
+    type: text
+    required: false
+    anchors:
+      - "المدير المفوض بالتوقيع"
+      - "المدير المفوض"
+      - "المدير / المالك"
+      - "المدير المسئول"
+      - "المدير"
+      - "صاحب المنشأة"
+      - "المالك"
+    pattern: null
+
+  - name: tax_id
+    label: "رقم البطاقة الضريبية"
+    type: text
+    required: false
+    anchors:
+      - "رقم البطاقة الضريبية"
+      - "البطاقة الضريبية"
+      - "رقم التسجيل الضريبي"
+    pattern: "^\\d{3}-\\d{3}-\\d{3}$"
+
+  - name: office
+    label: "جهة الإصدار"
+    type: text
+    required: false
+    anchors:
+      - "مكتب السجل التجاري"
+      - "مكتب السجل"
+      - "مكتب سجل تجاري"
+      - "جهة الإصدار"
+    pattern: null

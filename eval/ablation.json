@@ -1,0 +1,58 @@
+{
+  "full_default (Variant A)": {
+    "pass_all12_acc_pct": 75.0,
+    "pass_numeric_acc_pct": 60.0,
+    "pass_office_acc_pct": 50.0,
+    "pass_capital_acc_pct": 0.0,
+    "avg_ms": 23524
+  },
+  "no_deskew": {
+    "pass_all12_acc_pct": 70.8,
+    "pass_numeric_acc_pct": 60.0,
+    "pass_office_acc_pct": 0.0,
+    "pass_capital_acc_pct": 0.0,
+    "avg_ms": 18740
+  },
+  "no_stamp_suppression": {
+    "pass_all12_acc_pct": 70.8,
+    "pass_numeric_acc_pct": 60.0,
+    "pass_office_acc_pct": 0.0,
+    "pass_capital_acc_pct": 0.0,
+    "avg_ms": 18599
+  },
+  "no_illumination_norm": {
+    "pass_all12_acc_pct": 70.8,
+    "pass_numeric_acc_pct": 60.0,
+    "pass_office_acc_pct": 50.0,
+    "pass_capital_acc_pct": 50.0,
+    "avg_ms": 18952
+  },
+  "no_clahe": {
+    "pass_all12_acc_pct": 79.2,
+    "pass_numeric_acc_pct": 70.0,
+    "pass_office_acc_pct": 50.0,
+    "pass_capital_acc_pct": 50.0,
+    "avg_ms": 18432
+  },
+  "no_denoise": {
+    "pass_all12_acc_pct": 79.2,
+    "pass_numeric_acc_pct": 70.0,
+    "pass_office_acc_pct": 50.0,
+    "pass_capital_acc_pct": 50.0,
+    "avg_ms": 18861
+  },
+  "no_conditional_sharpen": {
+    "pass_all12_acc_pct": 75.0,
+    "pass_numeric_acc_pct": 60.0,
+    "pass_office_acc_pct": 50.0,
+    "pass_capital_acc_pct": 0.0,
+    "avg_ms": 18400
+  },
+  "with_variant_b (A+B)": {
+    "pass_all12_acc_pct": 75.0,
+    "pass_numeric_acc_pct": 60.0,
+    "pass_office_acc_pct": 50.0,
+    "pass_capital_acc_pct": 0.0,
+    "avg_ms": 32012
+  }
+}

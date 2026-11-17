@@ -1,0 +1,154 @@
+{
+  "sample_01_clean.jpg": {
+    "schema_version": "0.1",
+    "submission_id": "sub_1793813095_sample_01_cl",
+    "created_at": "2026-11-04T17:24:55.768525+00:00",
+    "test_data": true,
+    "status": "accepted",
+    "reasons": [],
+    "document": {
+      "type": "commercial_register",
+      "file_format": "image",
+      "pdf_kind": null,
+      "pages": 1,
+      "page_used": 1,
+      "quality": {
+        "score": 1.0,
+        "issues": []
+      }
+    },
+    "extraction": {
+      "text_method": "ocr",
+      "engine": "tesseract",
+      "languages": [
+        "ar",
+        "en"
+      ],
+      "ocr_confidence_mean": 0.8795,
+      "duration_ms": 1477
+    },
+    "fields": {
+      "company_name": {
+        "value": "شركة النور للخدمات اللوجستية",
+        "raw": "شركة النور للخدمات اللوجستية",
+        "status": "ok",
+        "confidence": 0.95,
+        "grounded": true,
+        "issues": [],
+        "page": 1
+      },
+      "legal_form": {
+        "value": "شركة مساهمة مصرية",
+        "raw": "شركة مساهمة مصرية",
+        "code": "jsc",
+        "status": "ok",
+        "confidence": 0.95,
+        "grounded": true,
+        "issues": [],
+        "page": 1
+      },
+      "register_number": {
+        "value": "621097",
+        "raw": "621097",
+        "status": "ok",
+        "confidence": 0.95,
+        "grounded": true,
+        "issues": [],
+        "page": 1
+      },
+      "issue_date": {
+        "value": "2024-02-02",
+        "raw": "02/02/2024",
+        "status": "ok",
+        "confidence": 0.92,
+        "grounded": true,
+        "issues": [],
+        "page": 1
+      },
+      "expiry_date": {
+        "value": "2029-02-02",
+        "raw": "02/02/2029",
+        "status": "ok",
+        "confidence": 0.9,
+        "grounded": true,
+        "issues": [],
+        "page": 1
+      },
+      "activity": {
+        "value": "النقل والتخزين والخدمات اللوجستية",
+        "raw": "النقل والتخزين والخدمات اللوجستية",
+        "status": "ok",
+        "confidence": 0.9,
+        "grounded": true,
+        "issues": [],
+        "page": 1
+      },
+      "governorate": {
+        "value": null,
+        "raw": null,
+        "status": "missing",
+        "confidence": null,
+        "grounded": false,
+        "issues": [
+          "not_found"
+        ],
+        "page": 1
+      },
+      "address": {
+        "value": "8 شارع الجلاء؛ ‎blocs‏ اللجديدة",
+        "raw": "8 شارع الجلاء؛ ‎blocs‏ اللجديدة",
+        "status": "ok",
+        "confidence": 0.88,
+        "grounded": true,
+        "issues": [],
+        "page": 1
+      },
+      "capital": {
+        "value": 0,
+        "raw": "0 جنيه",
+        "unit": "EGP",
+        "status": "ok",
+        "confidence": 0.92,
+        "grounded": true,
+        "issues": [],
+        "page": 1
+      },
+      "manager": {
+        "value": "أحمد محمد عيسى",
+        "raw": "أحمد محمد عيسى",
+        "status": "ok",
+        "confidence": 0.9,
+        "grounded": true,
+        "issues": [],
+        "page": 1
+      },
+      "tax_id": {
+        "value": "940-648-196",
+        "raw": "940-648-196",
+        "status": "ok",
+        "confidence": 0.95,
+        "grounded": true,
+        "issues": [],
+        "page": 1
+      },
+      "issuing_office": {
+        "value": null,
+        "raw": null,
+        "status": "missing",
+        "confidence": null,
+        "grounded": false,
+        "issues": [
+          "not_found"
+        ],
+        "page": 1
+      }
+    },
+    "raw_text": "نموذج وهمي - سجل تجاري\n\nاسم الشركة / المنشأة | شركة النور للخدمات اللوجستية\nالشكل القانوني شركة مساهمة مصرية\n\nرقم القيد بالسجل التجاري | 621097\n\nتاريخ القيد 02/02/2024\n\nالنشاط النقل والتخزين والخدمات اللوجستية\nالمحافظة دمياظط\n\nالعنوان 8 شارع الجلاء؛ ‎blocs‏ اللجديدة\nرأس الماك 0 جنيه مصري\n\nالمدير / المالك أحمد محمد عيسى\n\nرقم البطاقة الضريبية | 940-648-196\n\nتاريخ انتهاء الصلاحية | 02/02/2029\n\nجهة الإصدار\n\n",
+    "review": {
+      "required": false,
+      "fields_to_review": [],
+      "reviewed_by": null,
+      "reviewed_at": null
+    }
+  }
+}

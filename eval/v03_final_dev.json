@@ -1,0 +1,1882 @@
+{
+  "meta": {
+    "split": "dev",
+    "limit": 1,
+    "engine": "auto",
+    "total_docs": 7,
+    "synthetic_docs": 6,
+    "real_docs": 1,
+    "dev_sample_ids": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "heldout_sample_ids": [
+      9,
+      10,
+      11,
+      12
+    ],
+    "elapsed_seconds": 84.8,
+    "status_counts": {
+      "accepted": 2,
+      "needs_review": 3,
+      "rejected": 2
+    },
+    "needs_review_rate_pct": 42.9,
+    "rejected_rate_pct": 28.6,
+    "accepted_rate_pct": 28.6
+  },
+  "categories": {
+    "Digital PDF": {
+      "count": 1,
+      "synthetic_count": 1,
+      "real_count": 0,
+      "avg_time_ms": 193,
+      "avg_quality_score": 0.98,
+      "accepted_pct": 100.0,
+      "needs_review_pct": 0.0,
+      "rejected_pct": 0.0,
+      "all_12_fields_acc": 100.0,
+      "field_accuracy": {
+        "company_name": 100.0,
+        "legal_form": 100.0,
+        "register_number": 100.0,
+        "issue_date": 100.0,
+        "expiry_date": 100.0,
+        "activity": 100.0,
+        "governorate": 100.0,
+        "address": 100.0,
+        "capital": 100.0,
+        "manager": 100.0,
+        "tax_id": 100.0,
+        "office": 100.0
+      },
+      "wrong_fields": 0,
+      "wrong_caught_by_field_review_pct": 100.0,
+      "wrong_caught_by_doc_review_or_reject_pct": 100.0
+    },
+    "Digital Visual PDF": {
+      "count": 1,
+      "synthetic_count": 1,
+      "real_count": 0,
+      "avg_time_ms": 15,
+      "avg_quality_score": 0.98,
+      "accepted_pct": 100.0,
+      "needs_review_pct": 0.0,
+      "rejected_pct": 0.0,
+      "all_12_fields_acc": 100.0,
+      "field_accuracy": {
+        "company_name": 100.0,
+        "legal_form": 100.0,
+        "register_number": 100.0,
+        "issue_date": 100.0,
+        "expiry_date": 100.0,
+        "activity": 100.0,
+        "governorate": 100.0,
+        "address": 100.0,
+        "capital": 100.0,
+        "manager": 100.0,
+        "tax_id": 100.0,
+        "office": 100.0
+      },
+      "wrong_fields": 0,
+      "wrong_caught_by_field_review_pct": 100.0,
+      "wrong_caught_by_doc_review_or_reject_pct": 100.0
+    },
+    "Scanned PDF": {
+      "count": 1,
+      "synthetic_count": 1,
+      "real_count": 0,
+      "avg_time_ms": 31322,
+      "avg_quality_score": 1.0,
+      "accepted_pct": 0.0,
+      "needs_review_pct": 100.0,
+      "rejected_pct": 0.0,
+      "all_12_fields_acc": 91.7,
+      "field_accuracy": {
+        "company_name": 100.0,
+        "legal_form": 100.0,
+        "register_number": 100.0,
+        "issue_date": 100.0,
+        "expiry_date": 100.0,
+        "activity": 100.0,
+        "governorate": 100.0,
+        "address": 100.0,
+        "capital": 100.0,
+        "manager": 100.0,
+        "tax_id": 100.0,
+        "office": 0.0
+      },
+      "wrong_fields": 1,
+      "wrong_caught_by_field_review_pct": 100.0,
+      "wrong_caught_by_doc_review_or_reject_pct": 100.0
+    },
+    "Clean Image": {
+      "count": 1,
+      "synthetic_count": 1,
+      "real_count": 0,
+      "avg_time_ms": 17782,
+      "avg_quality_score": 1.0,
+      "accepted_pct": 0.0,
+      "needs_review_pct": 100.0,
+      "rejected_pct": 0.0,
+      "all_12_fields_acc": 83.3,
+      "field_accuracy": {
+        "company_name": 100.0,
+        "legal_form": 100.0,
+        "register_number": 100.0,
+        "issue_date": 100.0,
+        "expiry_date": 100.0,
+        "activity": 100.0,
+        "governorate": 100.0,
+        "address": 100.0,
+        "capital": 0.0,
+        "manager": 100.0,
+        "tax_id": 100.0,
+        "office": 0.0
+      },
+      "wrong_fields": 2,
+      "wrong_caught_by_field_review_pct": 50.0,
+      "wrong_caught_by_doc_review_or_reject_pct": 100.0
+    },
+    "Scan Image (Indic)": {
+      "count": 1,
+      "synthetic_count": 1,
+      "real_count": 0,
+      "avg_time_ms": 17019,
+      "avg_quality_score": 1.0,
+      "accepted_pct": 0.0,
+      "needs_review_pct": 0.0,
+      "rejected_pct": 100.0,
+      "all_12_fields_acc": 66.7,
+      "field_accuracy": {
+        "company_name": 100.0,
+        "legal_form": 100.0,
+        "register_number": 100.0,
+        "issue_date": 0.0,
+        "expiry_date": 0.0,
+        "activity": 100.0,
+        "governorate": 100.0,
+        "address": 100.0,
+        "capital": 100.0,
+        "manager": 100.0,
+        "tax_id": 0.0,
+        "office": 0.0
+      },
+      "wrong_fields": 4,
+      "wrong_caught_by_field_review_pct": 75.0,
+      "wrong_caught_by_doc_review_or_reject_pct": 100.0
+    },
+    "Phone Photo": {
+      "count": 1,
+      "synthetic_count": 1,
+      "real_count": 0,
+      "avg_time_ms": 18142,
+      "avg_quality_score": 1.0,
+      "accepted_pct": 0.0,
+      "needs_review_pct": 100.0,
+      "rejected_pct": 0.0,
+      "all_12_fields_acc": 83.3,
+      "field_accuracy": {
+        "company_name": 100.0,
+        "legal_form": 100.0,
+        "register_number": 100.0,
+        "issue_date": 100.0,
+        "expiry_date": 100.0,
+        "activity": 100.0,
+        "governorate": 100.0,
+        "address": 0.0,
+        "capital": 0.0,
+        "manager": 100.0,
+        "tax_id": 100.0,
+        "office": 100.0
+      },
+      "wrong_fields": 2,
+      "wrong_caught_by_field_review_pct": 50.0,
+      "wrong_caught_by_doc_review_or_reject_pct": 100.0
+    },
+    "Bad Image (Low-Res/Blur)": {
+      "count": 1,
+      "synthetic_count": 1,
+      "real_count": 0,
+      "avg_time_ms": 298,
+      "avg_quality_score": 0.1,
+      "accepted_pct": 0.0,
+      "needs_review_pct": 0.0,
+      "rejected_pct": 100.0,
+      "all_12_fields_acc": 0.0,
+      "field_accuracy": {
+        "company_name": 0.0,
+        "legal_form": 0.0,
+        "register_number": 0.0,
+        "issue_date": 0.0,
+        "expiry_date": 0.0,
+        "activity": 0.0,
+        "governorate": 0.0,
+        "address": 0.0,
+        "capital": 0.0,
+        "manager": 0.0,
+        "tax_id": 0.0,
+        "office": 0.0
+      },
+      "wrong_fields": 12,
+      "wrong_caught_by_field_review_pct": 25.0,
+      "wrong_caught_by_doc_review_or_reject_pct": 100.0
+    }
+  },
+  "per_field": {
+    "company_name": {
+      "all_exact_match_pct": 85.7,
+      "quality_passing_exact_match_pct": 100.0,
+      "dev_exact_match_pct": 85.7,
+      "heldout_exact_match_pct": 0.0,
+      "correct": 6,
+      "total": 7,
+      "passing_correct": 6,
+      "passing_total": 6,
+      "wrong": 1,
+      "wrong_caught_field_pct": 100.0,
+      "wrong_caught_doc_pct": 100.0,
+      "passing_wrong": 0,
+      "passing_wrong_caught_field_pct": 100.0,
+      "passing_wrong_caught_doc_pct": 100.0
+    },
+    "legal_form": {
+      "all_exact_match_pct": 85.7,
+      "quality_passing_exact_match_pct": 100.0,
+      "dev_exact_match_pct": 85.7,
+      "heldout_exact_match_pct": 0.0,
+      "correct": 6,
+      "total": 7,
+      "passing_correct": 6,
+      "passing_total": 6,
+      "wrong": 1,
+      "wrong_caught_field_pct": 0.0,
+      "wrong_caught_doc_pct": 100.0,
+      "passing_wrong": 0,
+      "passing_wrong_caught_field_pct": 100.0,
+      "passing_wrong_caught_doc_pct": 100.0
+    },
+    "register_number": {
+      "all_exact_match_pct": 85.7,
+      "quality_passing_exact_match_pct": 100.0,
+      "dev_exact_match_pct": 85.7,
+      "heldout_exact_match_pct": 0.0,
+      "correct": 6,
+      "total": 7,
+      "passing_correct": 6,
+      "passing_total": 6,
+      "wrong": 1,
+      "wrong_caught_field_pct": 100.0,
+      "wrong_caught_doc_pct": 100.0,
+      "passing_wrong": 0,
+      "passing_wrong_caught_field_pct": 100.0,
+      "passing_wrong_caught_doc_pct": 100.0
+    },
+    "issue_date": {
+      "all_exact_match_pct": 71.4,
+      "quality_passing_exact_match_pct": 83.3,
+      "dev_exact_match_pct": 71.4,
+      "heldout_exact_match_pct": 0.0,
+      "correct": 5,
+      "total": 7,
+      "passing_correct": 5,
+      "passing_total": 6,
+      "wrong": 2,
+      "wrong_caught_field_pct": 100.0,
+      "wrong_caught_doc_pct": 100.0,
+      "passing_wrong": 1,
+      "passing_wrong_caught_field_pct": 100.0,
+      "passing_wrong_caught_doc_pct": 100.0
+    },
+    "expiry_date": {
+      "all_exact_match_pct": 71.4,
+      "quality_passing_exact_match_pct": 83.3,
+      "dev_exact_match_pct": 71.4,
+      "heldout_exact_match_pct": 0.0,
+      "correct": 5,
+      "total": 7,
+      "passing_correct": 5,
+      "passing_total": 6,
+      "wrong": 2,
+      "wrong_caught_field_pct": 0.0,
+      "wrong_caught_doc_pct": 100.0,
+      "passing_wrong": 1,
+      "passing_wrong_caught_field_pct": 0.0,
+      "passing_wrong_caught_doc_pct": 100.0
+    },
+    "activity": {
+      "all_exact_match_pct": 85.7,
+      "quality_passing_exact_match_pct": 100.0,
+      "dev_exact_match_pct": 85.7,
+      "heldout_exact_match_pct": 0.0,
+      "correct": 6,
+      "total": 7,
+      "passing_correct": 6,
+      "passing_total": 6,
+      "wrong": 1,
+      "wrong_caught_field_pct": 0.0,
+      "wrong_caught_doc_pct": 100.0,
+      "passing_wrong": 0,
+      "passing_wrong_caught_field_pct": 100.0,
+      "passing_wrong_caught_doc_pct": 100.0
+    },
+    "governorate": {
+      "all_exact_match_pct": 85.7,
+      "quality_passing_exact_match_pct": 100.0,
+      "dev_exact_match_pct": 85.7,
+      "heldout_exact_match_pct": 0.0,
+      "correct": 6,
+      "total": 7,
+      "passing_correct": 6,
+      "passing_total": 6,
+      "wrong": 1,
+      "wrong_caught_field_pct": 0.0,
+      "wrong_caught_doc_pct": 100.0,
+      "passing_wrong": 0,
+      "passing_wrong_caught_field_pct": 100.0,
+      "passing_wrong_caught_doc_pct": 100.0
+    },
+    "address": {
+      "all_exact_match_pct": 71.4,
+      "quality_passing_exact_match_pct": 83.3,
+      "dev_exact_match_pct": 71.4,
+      "heldout_exact_match_pct": 0.0,
+      "correct": 5,
+      "total": 7,
+      "passing_correct": 5,
+      "passing_total": 6,
+      "wrong": 2,
+      "wrong_caught_field_pct": 0.0,
+      "wrong_caught_doc_pct": 100.0,
+      "passing_wrong": 1,
+      "passing_wrong_caught_field_pct": 0.0,
+      "passing_wrong_caught_doc_pct": 100.0
+    },
+    "capital": {
+      "all_exact_match_pct": 57.1,
+      "quality_passing_exact_match_pct": 66.7,
+      "dev_exact_match_pct": 57.1,
+      "heldout_exact_match_pct": 0.0,
+      "correct": 4,
+      "total": 7,
+      "passing_correct": 4,
+      "passing_total": 6,
+      "wrong": 3,
+      "wrong_caught_field_pct": 66.7,
+      "wrong_caught_doc_pct": 100.0,
+      "passing_wrong": 2,
+      "passing_wrong_caught_field_pct": 100.0,
+      "passing_wrong_caught_doc_pct": 100.0
+    },
+    "manager": {
+      "all_exact_match_pct": 85.7,
+      "quality_passing_exact_match_pct": 100.0,
+      "dev_exact_match_pct": 85.7,
+      "heldout_exact_match_pct": 0.0,
+      "correct": 6,
+      "total": 7,
+      "passing_correct": 6,
+      "passing_total": 6,
+      "wrong": 1,
+      "wrong_caught_field_pct": 0.0,
+      "wrong_caught_doc_pct": 100.0,
+      "passing_wrong": 0,
+      "passing_wrong_caught_field_pct": 100.0,
+      "passing_wrong_caught_doc_pct": 100.0
+    },
+    "tax_id": {
+      "all_exact_match_pct": 71.4,
+      "quality_passing_exact_match_pct": 83.3,
+      "dev_exact_match_pct": 71.4,
+      "heldout_exact_match_pct": 0.0,
+      "correct": 5,
+      "total": 7,
+      "passing_correct": 5,
+      "passing_total": 6,
+      "wrong": 2,
+      "wrong_caught_field_pct": 50.0,
+      "wrong_caught_doc_pct": 100.0,
+      "passing_wrong": 1,
+      "passing_wrong_caught_field_pct": 100.0,
+      "passing_wrong_caught_doc_pct": 100.0
+    },
+    "office": {
+      "all_exact_match_pct": 42.9,
+      "quality_passing_exact_match_pct": 50.0,
+      "dev_exact_match_pct": 42.9,
+      "heldout_exact_match_pct": 0.0,
+      "correct": 3,
+      "total": 7,
+      "passing_correct": 3,
+      "passing_total": 6,
+      "wrong": 4,
+      "wrong_caught_field_pct": 50.0,
+      "wrong_caught_doc_pct": 100.0,
+      "passing_wrong": 3,
+      "passing_wrong_caught_field_pct": 66.7,
+      "passing_wrong_caught_doc_pct": 100.0
+    }
+  },
+  "calibration": {
+    "ece": 0.0428,
+    "buckets": {
+      "[0.00, 0.50)": {
+        "count": 2,
+        "correct": 0,
+        "avg_confidence": 0.1308,
+        "actual_accuracy_pct": 0.0,
+        "calibration_gap": 0.1308
+      },
+      "[0.50, 0.70)": {
+        "count": 2,
+        "correct": 1,
+        "avg_confidence": 0.6432,
+        "actual_accuracy_pct": 50.0,
+        "calibration_gap": 0.1432
+      },
+      "[0.70, 0.85)": {
+        "count": 4,
+        "correct": 2,
+        "avg_confidence": 0.7718,
+        "actual_accuracy_pct": 50.0,
+        "calibration_gap": 0.2718
+      },
+      "[0.85, 0.95)": {
+        "count": 25,
+        "correct": 23,
+        "avg_confidence": 0.9297,
+        "actual_accuracy_pct": 92.0,
+        "calibration_gap": 0.0097
+      },
+      "[0.95, 1.00]": {
+        "count": 37,
+        "correct": 37,
+        "avg_confidence": 0.9698,
+        "actual_accuracy_pct": 100.0,
+        "calibration_gap": 0.0302
+      },
+      "none": {
+        "count": 14,
+        "correct": 0,
+        "avg_confidence": null,
+        "actual_accuracy_pct": 0.0,
+        "calibration_gap": null
+      }
+    }
+  },
+  "digit_confusion": {
+    "total_digits": 223,
+    "correct_digits": 204,
+    "digit_accuracy_pct": 91.48,
+    "top_errors": [
+      {
+        "true": "0",
+        "pred": "<MISSING>",
+        "count": 5
+      },
+      {
+        "true": "2",
+        "pred": "<MISSING>",
+        "count": 3
+      },
+      {
+        "true": "1",
+        "pred": "<MISSING>",
+        "count": 3
+      },
+      {
+        "true": "8",
+        "pred": "<MISSING>",
+        "count": 2
+      },
+      {
+        "true": "7",
+        "pred": "<MISSING>",
+        "count": 2
+      },
+      {
+        "true": "<INS>",
+        "pred": "9",
+        "count": 1
+      },
+      {
+        "true": "<INS>",
+        "pred": "7",
+        "count": 1
+      },
+      {
+        "true": "<INS>",
+        "pred": "6",
+        "count": 1
+      },
+      {
+        "true": "<INS>",
+        "pred": "4",
+        "count": 1
+      },
+      {
+        "true": "<INS>",
+        "pred": "2",
+        "count": 1
+      },
+      {
+        "true": "<INS>",
+        "pred": "0",
+        "count": 1
+      },
+      {
+        "true": "9",
+        "pred": "<DEL>",
+        "count": 1
+      },
+      {
+        "true": "6",
+        "pred": "<DEL>",
+        "count": 1
+      },
+      {
+        "true": "5",
+        "pred": "<MISSING>",
+        "count": 1
+      },
+      {
+        "true": "4",
+        "pred": "<DEL>",
+        "count": 1
+      }
+    ],
+    "matrix": {
+      "0": {
+        "0": 70,
+        "<MISSING>": 5
+      },
+      "1": {
+        "1": 18,
+        "<MISSING>": 3
+      },
+      "2": {
+        "2": 43,
+        "<MISSING>": 3
+      },
+      "3": {
+        "3": 5
+      },
+      "4": {
+        "4": 18,
+        "<DEL>": 1
+      },
+      "5": {
+        "<MISSING>": 1,
+        "5": 2
+      },
+      "6": {
+        "6": 16,
+        "<DEL>": 1
+      },
+      "7": {
+        "7": 7,
+        "<MISSING>": 2
+      },
+      "8": {
+        "8": 7,
+        "<MISSING>": 2
+      },
+      "9": {
+        "9": 18,
+        "<DEL>": 1
+      },
+      "<INS>": {
+        "2": 1,
+        "0": 1,
+        "9": 1,
+        "4": 1,
+        "6": 1,
+        "7": 1
+      }
+    }
+  },
+  "failures": [
+    {
+      "category": "Scanned PDF",
+      "file": "ocr_pdfs\\pdfs\\scanned\\sample_01_clean.pdf",
+      "split": "dev",
+      "field": "office",
+      "expected": "مكتب السجل التجاري - دمياط الجديدة",
+      "expected_norm": "مكتب السجل التجاري دمياط الجديده",
+      "got": "مكتب السجل التجاري دمياط الج",
+      "got_raw": "مكتب السجل التجاري دمياط الج",
+      "got_norm": "مكتب السجل التجاري دمياط الج",
+      "confidence": 0.7051,
+      "field_status": "suspect",
+      "field_needs_review": true,
+      "doc_status": "needs_review",
+      "quality_score": 1.0,
+      "engine": "paddleocr",
+      "bbox": [
+        0.1845,
+        0.8652,
+        0.6101,
+        0.8971
+      ]
+    },
+    {
+      "category": "Clean Image",
+      "file": "images\\sample_01_clean.jpg",
+      "split": "dev",
+      "field": "capital",
+      "expected": "100,000 جنيه مصري",
+      "expected_norm": "100000",
+      "got": 20100000.0,
+      "got_raw": ",20100,000",
+      "got_norm": "20100000",
+      "confidence": 0.08,
+      "field_status": "suspect",
+      "field_needs_review": true,
+      "doc_status": "needs_review",
+      "quality_score": 1.0,
+      "engine": "paddleocr",
+      "bbox": [
+        0.3376,
+        0.6075,
+        0.625,
+        0.6475
+      ]
+    },
+    {
+      "category": "Clean Image",
+      "file": "images\\sample_01_clean.jpg",
+      "split": "dev",
+      "field": "office",
+      "expected": "مكتب السجل التجاري - دمياط الجديدة",
+      "expected_norm": "مكتب السجل التجاري دمياط الجديده",
+      "got": "مكتب السجل التجاريدمياط الجبيدة",
+      "got_raw": "مكتب السجل التجاريدمياط الجبيدة",
+      "got_norm": "مكتب السجل التجاريدمياط الجبيده",
+      "confidence": 0.9175,
+      "field_status": "ok",
+      "field_needs_review": false,
+      "doc_status": "needs_review",
+      "quality_score": 1.0,
+      "engine": "paddleocr",
+      "bbox": [
+        0.1476,
+        0.87,
+        0.6081,
+        0.8974
+      ]
+    },
+    {
+      "category": "Scan Image (Indic)",
+      "file": "images\\sample_02_scan.jpg",
+      "split": "dev",
+      "field": "issue_date",
+      "expected": "١٨/٠٧/٢٠١٥",
+      "expected_norm": "2015-07-18",
+      "got": null,
+      "got_raw": null,
+      "got_norm": null,
+      "confidence": null,
+      "field_status": "missing",
+      "field_needs_review": true,
+      "doc_status": "rejected",
+      "quality_score": 1.0,
+      "engine": "paddleocr",
+      "bbox": null
+    },
+    {
+      "category": "Scan Image (Indic)",
+      "file": "images\\sample_02_scan.jpg",
+      "split": "dev",
+      "field": "expiry_date",
+      "expected": "١٨/٠٧/٢٠٢٠",
+      "expected_norm": "2020-07-18",
+      "got": null,
+      "got_raw": null,
+      "got_norm": null,
+      "confidence": null,
+      "field_status": "missing",
+      "field_needs_review": false,
+      "doc_status": "rejected",
+      "quality_score": 1.0,
+      "engine": "paddleocr",
+      "bbox": null
+    },
+    {
+      "category": "Scan Image (Indic)",
+      "file": "images\\sample_02_scan.jpg",
+      "split": "dev",
+      "field": "tax_id",
+      "expected": "١٦٠-٩٤٦-٦٧٩",
+      "expected_norm": "160946679",
+      "got": "946-160-679",
+      "got_raw": "٩٤٦٠١٦٠-٦٧٩",
+      "got_norm": "946160679",
+      "confidence": 0.6677,
+      "field_status": "suspect",
+      "field_needs_review": true,
+      "doc_status": "rejected",
+      "quality_score": 1.0,
+      "engine": "paddleocr",
+      "bbox": [
+        0.4276,
+        0.7432,
+        0.6,
+        0.7647
+      ]
+    },
+    {
+      "category": "Scan Image (Indic)",
+      "file": "images\\sample_02_scan.jpg",
+      "split": "dev",
+      "field": "office",
+      "expected": "مكتب السجل التجاري - سموحة",
+      "expected_norm": "مكتب السجل التجاري سموحه",
+      "got": "مكتب السجل التجاري سموجة بي",
+      "got_raw": "مكتب السجل التجاري سموجة بي",
+      "got_norm": "مكتب السجل التجاري سموجه بي",
+      "confidence": 0.7671,
+      "field_status": "suspect",
+      "field_needs_review": true,
+      "doc_status": "rejected",
+      "quality_score": 1.0,
+      "engine": "paddleocr",
+      "bbox": [
+        0.1582,
+        0.8669,
+        0.6044,
+        0.9009
+      ]
+    },
+    {
+      "category": "Phone Photo",
+      "file": "images\\sample_03_phone.jpg",
+      "split": "dev",
+      "field": "address",
+      "expected": "105 شارع الحرية، الدقي",
+      "expected_norm": "105 شارع الحريه الدقي",
+      "got": "5 شارع الحرية، الدقي",
+      "got_raw": "5 شارع الحرية، الدقي",
+      "got_norm": "5 شارع الحريه الدقي",
+      "confidence": 0.9063,
+      "field_status": "ok",
+      "field_needs_review": false,
+      "doc_status": "needs_review",
+      "quality_score": 1.0,
+      "engine": "paddleocr",
+      "bbox": [
+        0.3149,
+        0.5498,
+        0.6032,
+        0.5755
+      ]
+    },
+    {
+      "category": "Phone Photo",
+      "file": "images\\sample_03_phone.jpg",
+      "split": "dev",
+      "field": "capital",
+      "expected": "100,000 جنيه مصري",
+      "expected_norm": "100000",
+      "got": 7100000.0,
+      "got_raw": "7100,000ا",
+      "got_norm": "7100000",
+      "confidence": 0.1817,
+      "field_status": "suspect",
+      "field_needs_review": true,
+      "doc_status": "needs_review",
+      "quality_score": 1.0,
+      "engine": "paddleocr",
+      "bbox": [
+        0.3405,
+        0.5983,
+        0.625,
+        0.6503
+      ]
+    },
+    {
+      "category": "Bad Image (Low-Res/Blur)",
+      "file": "images\\sample_04_bad.jpg",
+      "split": "dev",
+      "field": "company_name",
+      "expected": "شركة الوادي للتجارة والتوزيع",
+      "expected_norm": "شركه الوادي للتجاره والتوزيع",
+      "got": null,
+      "got_raw": null,
+      "got_norm": null,
+      "confidence": null,
+      "field_status": "missing",
+      "field_needs_review": true,
+      "doc_status": "rejected",
+      "quality_score": 0.1,
+      "engine": "quality_gate",
+      "bbox": null
+    },
+    {
+      "category": "Bad Image (Low-Res/Blur)",
+      "file": "images\\sample_04_bad.jpg",
+      "split": "dev",
+      "field": "legal_form",
+      "expected": "شركة ذات مسئولية محدودة",
+      "expected_norm": "شركه ذات مسئوليه محدوده",
+      "got": null,
+      "got_raw": null,
+      "got_norm": null,
+      "confidence": null,
+      "field_status": "missing",
+      "field_needs_review": false,
+      "doc_status": "rejected",
+      "quality_score": 0.1,
+      "engine": "quality_gate",
+      "bbox": null
+    },
+    {
+      "category": "Bad Image (Low-Res/Blur)",
+      "file": "images\\sample_04_bad.jpg",
+      "split": "dev",
+      "field": "register_number",
+      "expected": "٦٢٤٠٠٦",
+      "expected_norm": "624006",
+      "got": null,
+      "got_raw": null,
+      "got_norm": null,
+      "confidence": null,
+      "field_status": "missing",
+      "field_needs_review": true,
+      "doc_status": "rejected",
+      "quality_score": 0.1,
+      "engine": "quality_gate",
+      "bbox": null
+    },
+    {
+      "category": "Bad Image (Low-Res/Blur)",
+      "file": "images\\sample_04_bad.jpg",
+      "split": "dev",
+      "field": "issue_date",
+      "expected": "٢٢/٠٩/٢٠٢١",
+      "expected_norm": "2021-09-22",
+      "got": null,
+      "got_raw": null,
+      "got_norm": null,
+      "confidence": null,
+      "field_status": "missing",
+      "field_needs_review": true,
+      "doc_status": "rejected",
+      "quality_score": 0.1,
+      "engine": "quality_gate",
+      "bbox": null
+    },
+    {
+      "category": "Bad Image (Low-Res/Blur)",
+      "file": "images\\sample_04_bad.jpg",
+      "split": "dev",
+      "field": "expiry_date",
+      "expected": "٢٢/٠٩/٢٠٢٦",
+      "expected_norm": "2026-09-22",
+      "got": null,
+      "got_raw": null,
+      "got_norm": null,
+      "confidence": null,
+      "field_status": "missing",
+      "field_needs_review": false,
+      "doc_status": "rejected",
+      "quality_score": 0.1,
+      "engine": "quality_gate",
+      "bbox": null
+    },
+    {
+      "category": "Bad Image (Low-Res/Blur)",
+      "file": "images\\sample_04_bad.jpg",
+      "split": "dev",
+      "field": "activity",
+      "expected": "تجارة وتوزيع السلع الاستهلاكية",
+      "expected_norm": "تجاره وتوزيع السلع الاستهلاكيه",
+      "got": null,
+      "got_raw": null,
+      "got_norm": null,
+      "confidence": null,
+      "field_status": "missing",
+      "field_needs_review": false,
+      "doc_status": "rejected",
+      "quality_score": 0.1,
+      "engine": "quality_gate",
+      "bbox": null
+    },
+    {
+      "category": "Bad Image (Low-Res/Blur)",
+      "file": "images\\sample_04_bad.jpg",
+      "split": "dev",
+      "field": "governorate",
+      "expected": "الإسكندرية",
+      "expected_norm": "الاسكندريه",
+      "got": null,
+      "got_raw": null,
+      "got_norm": null,
+      "confidence": null,
+      "field_status": "missing",
+      "field_needs_review": false,
+      "doc_status": "rejected",
+      "quality_score": 0.1,
+      "engine": "quality_gate",
+      "bbox": null
+    },
+    {
+      "category": "Bad Image (Low-Res/Blur)",
+      "file": "images\\sample_04_bad.jpg",
+      "split": "dev",
+      "field": "address",
+      "expected": "١١٩ شارع التحرير، سموحة",
+      "expected_norm": "119 شارع التحرير سموحه",
+      "got": null,
+      "got_raw": null,
+      "got_norm": null,
+      "confidence": null,
+      "field_status": "missing",
+      "field_needs_review": false,
+      "doc_status": "rejected",
+      "quality_score": 0.1,
+      "engine": "quality_gate",
+      "bbox": null
+    },
+    {
+      "category": "Bad Image (Low-Res/Blur)",
+      "file": "images\\sample_04_bad.jpg",
+      "split": "dev",
+      "field": "capital",
+      "expected": "٢٥٠٬٠٠٠ جنيه مصري",
+      "expected_norm": "250000",
+      "got": null,
+      "got_raw": null,
+      "got_norm": null,
+      "confidence": null,
+      "field_status": "missing",
+      "field_needs_review": false,
+      "doc_status": "rejected",
+      "quality_score": 0.1,
+      "engine": "quality_gate",
+      "bbox": null
+    },
+    {
+      "category": "Bad Image (Low-Res/Blur)",
+      "file": "images\\sample_04_bad.jpg",
+      "split": "dev",
+      "field": "manager",
+      "expected": "خالد مصطفى فؤاد",
+      "expected_norm": "خالد مصطفي فؤاد",
+      "got": null,
+      "got_raw": null,
+      "got_norm": null,
+      "confidence": null,
+      "field_status": "missing",
+      "field_needs_review": false,
+      "doc_status": "rejected",
+      "quality_score": 0.1,
+      "engine": "quality_gate",
+      "bbox": null
+    },
+    {
+      "category": "Bad Image (Low-Res/Blur)",
+      "file": "images\\sample_04_bad.jpg",
+      "split": "dev",
+      "field": "tax_id",
+      "expected": "٥٣٧-٨٩٥-٤٢١",
+      "expected_norm": "537895421",
+      "got": null,
+      "got_raw": null,
+      "got_norm": null,
+      "confidence": null,
+      "field_status": "missing",
+      "field_needs_review": false,
+      "doc_status": "rejected",
+      "quality_score": 0.1,
+      "engine": "quality_gate",
+      "bbox": null
+    },
+    {
+      "category": "Bad Image (Low-Res/Blur)",
+      "file": "images\\sample_04_bad.jpg",
+      "split": "dev",
+      "field": "office",
+      "expected": "مكتب السجل التجاري - سموحة",
+      "expected_norm": "مكتب السجل التجاري سموحه",
+      "got": null,
+      "got_raw": null,
+      "got_norm": null,
+      "confidence": null,
+      "field_status": "missing",
+      "field_needs_review": false,
+      "doc_status": "rejected",
+      "quality_score": 0.1,
+      "engine": "quality_gate",
+      "bbox": null
+    }
+  ],
+  "documents": [
+    {
+      "category": "Digital PDF",
+      "file": "ocr_pdfs\\pdfs\\digital\\sample_01_digital.pdf",
+      "split": "dev",
+      "status": "accepted",
+      "reasons": [],
+      "engine": "pdfplumber_rtl",
+      "text_method": "text_layer",
+      "quality_score": 0.98,
+      "duration_ms": 193,
+      "fields": {
+        "company_name": {
+          "ok": true,
+          "expected": "شركه النور للخدمات اللوجستيه",
+          "got": "شركه النور للخدمات اللوجستيه",
+          "conf": 0.96,
+          "needs_review": false,
+          "engines_agree": null,
+          "validated": true
+        },
+        "legal_form": {
+          "ok": true,
+          "expected": "شركه مساهمه مصريه",
+          "got": "شركه مساهمه مصريه",
+          "conf": 0.96,
+          "needs_review": false,
+          "engines_agree": null,
+          "validated": true
+        },
+        "register_number": {
+          "ok": true,
+          "expected": "621097",
+          "got": "621097",
+          "conf": 0.96,
+          "needs_review": false,
+          "engines_agree": null,
+          "validated": true
+        },
+        "issue_date": {
+          "ok": true,
+          "expected": "2024-02-02",
+          "got": "2024-02-02",
+          "conf": 0.96,
+          "needs_review": false,
+          "engines_agree": null,
+          "validated": true
+        },
+        "expiry_date": {
+          "ok": true,
+          "expected": "2029-02-02",
+          "got": "2029-02-02",
+          "conf": 0.96,
+          "needs_review": false,
+          "engines_agree": null,
+          "validated": true
+        },
+        "activity": {
+          "ok": true,
+          "expected": "النقل والتخزين والخدمات اللوجستيه",
+          "got": "النقل والتخزين والخدمات اللوجستيه",
+          "conf": 0.96,
+          "needs_review": false,
+          "engines_agree": null,
+          "validated": true
+        },
+        "governorate": {
+          "ok": true,
+          "expected": "دمياط",
+          "got": "دمياط",
+          "conf": 0.96,
+          "needs_review": false,
+          "engines_agree": null,
+          "validated": true
+        },
+        "address": {
+          "ok": true,
+          "expected": "8 شارع الجلاء دمياط الجديده",
+          "got": "8 شارع الجلاء دمياط الجديده",
+          "conf": 0.96,
+          "needs_review": false,
+          "engines_agree": null,
+          "validated": true
+        },
+        "capital": {
+          "ok": true,
+          "expected": "100000",
+          "got": "100000",
+          "conf": 0.96,
+          "needs_review": false,
+          "engines_agree": null,
+          "validated": true
+        },
+        "manager": {
+          "ok": true,
+          "expected": "احمد محمد عيسي",
+          "got": "احمد محمد عيسي",
+          "conf": 0.96,
+          "needs_review": false,
+          "engines_agree": null,
+          "validated": true
+        },
+        "tax_id": {
+          "ok": true,
+          "expected": "940648196",
+          "got": "940648196",
+          "conf": 0.96,
+          "needs_review": false,
+          "engines_agree": null,
+          "validated": true
+        },
+        "office": {
+          "ok": true,
+          "expected": "مكتب السجل التجاري دمياط الجديده",
+          "got": "مكتب السجل التجاري دمياط الجديده",
+          "conf": 0.96,
+          "needs_review": false,
+          "engines_agree": null,
+          "validated": true
+        }
+      }
+    },
+    {
+      "category": "Digital Visual PDF",
+      "file": "ocr_pdfs\\pdfs\\digital_visual\\sample_01_visual.pdf",
+      "split": "dev",
+      "status": "accepted",
+      "reasons": [],
+      "engine": "pypdfium2",
+      "text_method": "text_layer",
+      "quality_score": 0.98,
+      "duration_ms": 15,
+      "fields": {
+        "company_name": {
+          "ok": true,
+          "expected": "شركه النور للخدمات اللوجستيه",
+          "got": "شركه النور للخدمات اللوجستيه",
+          "conf": 0.96,
+          "needs_review": false,
+          "engines_agree": null,
+          "validated": true
+        },
+        "legal_form": {
+          "ok": true,
+          "expected": "شركه مساهمه مصريه",
+          "got": "شركه مساهمه مصريه",
+          "conf": 0.96,
+          "needs_review": false,
+          "engines_agree": null,
+          "validated": true
+        },
+        "register_number": {
+          "ok": true,
+          "expected": "621097",
+          "got": "621097",
+          "conf": 0.96,
+          "needs_review": false,
+          "engines_agree": null,
+          "validated": true
+        },
+        "issue_date": {
+          "ok": true,
+          "expected": "2024-02-02",
+          "got": "2024-02-02",
+          "conf": 0.96,
+          "needs_review": false,
+          "engines_agree": null,
+          "validated": true
+        },
+        "expiry_date": {
+          "ok": true,
+          "expected": "2029-02-02",
+          "got": "2029-02-02",
+          "conf": 0.96,
+          "needs_review": false,
+          "engines_agree": null,
+          "validated": true
+        },
+        "activity": {
+          "ok": true,
+          "expected": "النقل والتخزين والخدمات اللوجستيه",
+          "got": "النقل والتخزين والخدمات اللوجستيه",
+          "conf": 0.96,
+          "needs_review": false,
+          "engines_agree": null,
+          "validated": true
+        },
+        "governorate": {
+          "ok": true,
+          "expected": "دمياط",
+          "got": "دمياط",
+          "conf": 0.96,
+          "needs_review": false,
+          "engines_agree": null,
+          "validated": true
+        },
+        "address": {
+          "ok": true,
+          "expected": "8 شارع الجلاء دمياط الجديده",
+          "got": "8 شارع الجلاء دمياط الجديده",
+          "conf": 0.96,
+          "needs_review": false,
+          "engines_agree": null,
+          "validated": true
+        },
+        "capital": {
+          "ok": true,
+          "expected": "100000",
+          "got": "100000",
+          "conf": 0.96,
+          "needs_review": false,
+          "engines_agree": null,
+          "validated": true
+        },
+        "manager": {
+          "ok": true,
+          "expected": "احمد محمد عيسي",
+          "got": "احمد محمد عيسي",
+          "conf": 0.96,
+          "needs_review": false,
+          "engines_agree": null,
+          "validated": true
+        },
+        "tax_id": {
+          "ok": true,
+          "expected": "940648196",
+          "got": "940648196",
+          "conf": 0.96,
+          "needs_review": false,
+          "engines_agree": null,
+          "validated": true
+        },
+        "office": {
+          "ok": true,
+          "expected": "مكتب السجل التجاري دمياط الجديده",
+          "got": "مكتب السجل التجاري دمياط الجديده",
+          "conf": 0.96,
+          "needs_review": false,
+          "engines_agree": null,
+          "validated": true
+        }
+      }
+    },
+    {
+      "category": "Scanned PDF",
+      "file": "ocr_pdfs\\pdfs\\scanned\\sample_01_clean.pdf",
+      "split": "dev",
+      "status": "needs_review",
+      "reasons": [
+        "office:not_grounded"
+      ],
+      "engine": "paddleocr",
+      "text_method": "ocr",
+      "quality_score": 1.0,
+      "duration_ms": 31322,
+      "fields": {
+        "company_name": {
+          "ok": true,
+          "expected": "شركه النور للخدمات اللوجستيه",
+          "got": "شركه النور للخدمات اللوجستيه",
+          "conf": 0.9355,
+          "needs_review": false,
+          "engines_agree": null,
+          "validated": true
+        },
+        "legal_form": {
+          "ok": true,
+          "expected": "شركه مساهمه مصريه",
+          "got": "شركه مساهمه مصريه",
+          "conf": 0.9491,
+          "needs_review": false,
+          "engines_agree": null,
+          "validated": true
+        },
+        "register_number": {
+          "ok": true,
+          "expected": "621097",
+          "got": "621097",
+          "conf": 0.99,
+          "needs_review": false,
+          "engines_agree": true,
+          "validated": true
+        },
+        "issue_date": {
+          "ok": true,
+          "expected": "2024-02-02",
+          "got": "2024-02-02",
+          "conf": 0.99,
+          "needs_review": false,
+          "engines_agree": true,
+          "validated": true
+        },
+        "expiry_date": {
+          "ok": true,
+          "expected": "2029-02-02",
+          "got": "2029-02-02",
+          "conf": 0.99,
+          "needs_review": false,
+          "engines_agree": true,
+          "validated": true
+        },
+        "activity": {
+          "ok": true,
+          "expected": "النقل والتخزين والخدمات اللوجستيه",
+          "got": "النقل والتخزين والخدمات اللوجستيه",
+          "conf": 0.9395,
+          "needs_review": false,
+          "engines_agree": null,
+          "validated": true
+        },
+        "governorate": {
+          "ok": true,
+          "expected": "دمياط",
+          "got": "دمياط",
+          "conf": 0.8408,
+          "needs_review": false,
+          "engines_agree": null,
+          "validated": true
+        },
+        "address": {
+          "ok": true,
+          "expected": "8 شارع الجلاء دمياط الجديده",
+          "got": "8 شارع الجلاء دمياط الجديده",
+          "conf": 0.9027,
+          "needs_review": false,
+          "engines_agree": null,
+          "validated": true
+        },
+        "capital": {
+          "ok": true,
+          "expected": "100000",
+          "got": "100000",
+          "conf": 0.9638,
+          "needs_review": false,
+          "engines_agree": true,
+          "validated": true
+        },
+        "manager": {
+          "ok": true,
+          "expected": "احمد محمد عيسي",
+          "got": "احمد محمد عيسي",
+          "conf": 0.9393,
+          "needs_review": false,
+          "engines_agree": null,
+          "validated": true
+        },
+        "tax_id": {
+          "ok": true,
+          "expected": "940648196",
+          "got": "940648196",
+          "conf": 0.99,
+          "needs_review": false,
+          "engines_agree": true,
+          "validated": true
+        },
+        "office": {
+          "ok": false,
+          "expected": "مكتب السجل التجاري دمياط الجديده",
+          "got": "مكتب السجل التجاري دمياط الج",
+          "conf": 0.7051,
+          "needs_review": true,
+          "engines_agree": null,
+          "validated": true
+        }
+      }
+    },
+    {
+      "category": "Clean Image",
+      "file": "images\\sample_01_clean.jpg",
+      "split": "dev",
+      "status": "needs_review",
+      "reasons": [
+        "unified_register_number:format_mismatch"
+      ],
+      "engine": "paddleocr",
+      "text_method": "ocr",
+      "quality_score": 1.0,
+      "duration_ms": 17782,
+      "fields": {
+        "company_name": {
+          "ok": true,
+          "expected": "شركه النور للخدمات اللوجستيه",
+          "got": "شركه النور للخدمات اللوجستيه",
+          "conf": 0.9355,
+          "needs_review": false,
+          "engines_agree": null,
+          "validated": true
+        },
+        "legal_form": {
+          "ok": true,
+          "expected": "شركه مساهمه مصريه",
+          "got": "شركه مساهمه مصريه",
+          "conf": 0.947,
+          "needs_review": false,
+          "engines_agree": null,
+          "validated": true
+        },
+        "register_number": {
+          "ok": true,
+          "expected": "621097",
+          "got": "621097",
+          "conf": 0.99,
+          "needs_review": false,
+          "engines_agree": true,
+          "validated": true
+        },
+        "issue_date": {
+          "ok": true,
+          "expected": "2024-02-02",
+          "got": "2024-02-02",
+          "conf": 0.99,
+          "needs_review": false,
+          "engines_agree": true,
+          "validated": true
+        },
+        "expiry_date": {
+          "ok": true,
+          "expected": "2029-02-02",
+          "got": "2029-02-02",
+          "conf": 0.99,
+          "needs_review": false,
+          "engines_agree": true,
+          "validated": true
+        },
+        "activity": {
+          "ok": true,
+          "expected": "النقل والتخزين والخدمات اللوجستيه",
+          "got": "النقل والتخزين والخدمات اللوجستيه",
+          "conf": 0.939,
+          "needs_review": false,
+          "engines_agree": null,
+          "validated": true
+        },
+        "governorate": {
+          "ok": true,
+          "expected": "دمياط",
+          "got": "دمياط",
+          "conf": 0.8982,
+          "needs_review": false,
+          "engines_agree": null,
+          "validated": true
+        },
+        "address": {
+          "ok": true,
+          "expected": "8 شارع الجلاء دمياط الجديده",
+          "got": "8 شارع الجلاء دمياط الجديده",
+          "conf": 0.9278,
+          "needs_review": false,
+          "engines_agree": null,
+          "validated": true
+        },
+        "capital": {
+          "ok": false,
+          "expected": "100000",
+          "got": "20100000",
+          "conf": 0.08,
+          "needs_review": true,
+          "engines_agree": false,
+          "validated": true
+        },
+        "manager": {
+          "ok": true,
+          "expected": "احمد محمد عيسي",
+          "got": "احمد محمد عيسي",
+          "conf": 0.9297,
+          "needs_review": false,
+          "engines_agree": null,
+          "validated": true
+        },
+        "tax_id": {
+          "ok": true,
+          "expected": "940648196",
+          "got": "940648196",
+          "conf": 0.99,
+          "needs_review": false,
+          "engines_agree": true,
+          "validated": true
+        },
+        "office": {
+          "ok": false,
+          "expected": "مكتب السجل التجاري دمياط الجديده",
+          "got": "مكتب السجل التجاريدمياط الجبيده",
+          "conf": 0.9175,
+          "needs_review": false,
+          "engines_agree": null,
+          "validated": true
+        }
+      }
+    },
+    {
+      "category": "Scan Image (Indic)",
+      "file": "images\\sample_02_scan.jpg",
+      "split": "dev",
+      "status": "rejected",
+      "reasons": [
+        "core_fields_missing",
+        "critical_field_missing:issue_date"
+      ],
+      "engine": "paddleocr",
+      "text_method": "ocr",
+      "quality_score": 1.0,
+      "duration_ms": 17019,
+      "fields": {
+        "company_name": {
+          "ok": true,
+          "expected": "شركه الدلتا للادوات المكتبيه",
+          "got": "شركه الدلتا للادوات المكتبيه",
+          "conf": 0.942,
+          "needs_review": false,
+          "engines_agree": null,
+          "validated": true
+        },
+        "legal_form": {
+          "ok": true,
+          "expected": "شركه ذات مسئوليه محدوده",
+          "got": "شركه ذات مسئوليه محدوده",
+          "conf": 0.9447,
+          "needs_review": false,
+          "engines_agree": null,
+          "validated": true
+        },
+        "register_number": {
+          "ok": true,
+          "expected": "244083",
+          "got": "244083",
+          "conf": 0.6188,
+          "needs_review": true,
+          "engines_agree": false,
+          "validated": true
+        },
+        "issue_date": {
+          "ok": false,
+          "expected": "2015-07-18",
+          "got": null,
+          "conf": null,
+          "needs_review": true,
+          "engines_agree": null,
+          "validated": false
+        },
+        "expiry_date": {
+          "ok": false,
+          "expected": "2020-07-18",
+          "got": null,
+          "conf": null,
+          "needs_review": false,
+          "engines_agree": null,
+          "validated": null
+        },
+        "activity": {
+          "ok": true,
+          "expected": "تجاره الادوات المكتبيه والقرطاسيه",
+          "got": "تجاره الادوات المكتبيه والقرطاسيه",
+          "conf": 0.9449,
+          "needs_review": false,
+          "engines_agree": null,
+          "validated": true
+        },
+        "governorate": {
+          "ok": true,
+          "expected": "الاسكندريه",
+          "got": "الاسكندريه",
+          "conf": 0.9457,
+          "needs_review": false,
+          "engines_agree": null,
+          "validated": true
+        },
+        "address": {
+          "ok": true,
+          "expected": "81 شارع الحريه سموحه",
+          "got": "81 شارع الحريه سموحه",
+          "conf": 0.9223,
+          "needs_review": false,
+          "engines_agree": null,
+          "validated": true
+        },
+        "capital": {
+          "ok": true,
+          "expected": "1000000",
+          "got": "1000000",
+          "conf": 0.8662,
+          "needs_review": false,
+          "engines_agree": null,
+          "validated": true
+        },
+        "manager": {
+          "ok": true,
+          "expected": "احمد يوسف النجار",
+          "got": "احمد يوسف النجار",
+          "conf": 0.9357,
+          "needs_review": false,
+          "engines_agree": null,
+          "validated": true
+        },
+        "tax_id": {
+          "ok": false,
+          "expected": "160946679",
+          "got": "946160679",
+          "conf": 0.6677,
+          "needs_review": true,
+          "engines_agree": false,
+          "validated": true
+        },
+        "office": {
+          "ok": false,
+          "expected": "مكتب السجل التجاري سموحه",
+          "got": "مكتب السجل التجاري سموجه بي",
+          "conf": 0.7671,
+          "needs_review": true,
+          "engines_agree": null,
+          "validated": true
+        }
+      }
+    },
+    {
+      "category": "Phone Photo",
+      "file": "images\\sample_03_phone.jpg",
+      "split": "dev",
+      "status": "needs_review",
+      "reasons": [
+        "capital:engine_disagreement",
+        "office:not_grounded",
+        "unified_register_number:format_mismatch"
+      ],
+      "engine": "paddleocr",
+      "text_method": "ocr",
+      "quality_score": 1.0,
+      "duration_ms": 18142,
+      "fields": {
+        "company_name": {
+          "ok": true,
+          "expected": "شركه الفجر لتكنولوجيا المعلومات",
+          "got": "شركه الفجر لتكنولوجيا المعلومات",
+          "conf": 0.9356,
+          "needs_review": false,
+          "engines_agree": null,
+          "validated": true
+        },
+        "legal_form": {
+          "ok": true,
+          "expected": "شركه ذات مسئوليه محدوده",
+          "got": "شركه ذات مسئوليه محدوده",
+          "conf": 0.937,
+          "needs_review": false,
+          "engines_agree": null,
+          "validated": true
+        },
+        "register_number": {
+          "ok": true,
+          "expected": "597472",
+          "got": "597472",
+          "conf": 0.99,
+          "needs_review": false,
+          "engines_agree": true,
+          "validated": true
+        },
+        "issue_date": {
+          "ok": true,
+          "expected": "2018-03-14",
+          "got": "2018-03-14",
+          "conf": 0.99,
+          "needs_review": false,
+          "engines_agree": true,
+          "validated": true
+        },
+        "expiry_date": {
+          "ok": true,
+          "expected": "2023-03-14",
+          "got": "2023-03-14",
+          "conf": 0.99,
+          "needs_review": false,
+          "engines_agree": true,
+          "validated": true
+        },
+        "activity": {
+          "ok": true,
+          "expected": "تطوير البرمجيات وخدمات تكنولوجيا المعلومات",
+          "got": "تطوير البرمجيات وخدمات تكنولوجيا المعلومات",
+          "conf": 0.9338,
+          "needs_review": false,
+          "engines_agree": null,
+          "validated": true
+        },
+        "governorate": {
+          "ok": true,
+          "expected": "الجيزه",
+          "got": "الجيزه",
+          "conf": 0.9489,
+          "needs_review": false,
+          "engines_agree": null,
+          "validated": true
+        },
+        "address": {
+          "ok": false,
+          "expected": "105 شارع الحريه الدقي",
+          "got": "5 شارع الحريه الدقي",
+          "conf": 0.9063,
+          "needs_review": false,
+          "engines_agree": null,
+          "validated": true
+        },
+        "capital": {
+          "ok": false,
+          "expected": "100000",
+          "got": "7100000",
+          "conf": 0.1817,
+          "needs_review": true,
+          "engines_agree": false,
+          "validated": true
+        },
+        "manager": {
+          "ok": true,
+          "expected": "محمد يوسف النجار",
+          "got": "محمد يوسف النجار",
+          "conf": 0.9177,
+          "needs_review": false,
+          "engines_agree": null,
+          "validated": true
+        },
+        "tax_id": {
+          "ok": true,
+          "expected": "653220684",
+          "got": "653220684",
+          "conf": 0.99,
+          "needs_review": false,
+          "engines_agree": true,
+          "validated": true
+        },
+        "office": {
+          "ok": true,
+          "expected": "مكتب السجل التجاري الدقي",
+          "got": "مكتب السجل التجاري الدقي",
+          "conf": 0.7743,
+          "needs_review": true,
+          "engines_agree": null,
+          "validated": true
+        }
+      }
+    },
+    {
+      "category": "Bad Image (Low-Res/Blur)",
+      "file": "images\\sample_04_bad.jpg",
+      "split": "dev",
+      "status": "rejected",
+      "reasons": [
+        "image_quality_too_low"
+      ],
+      "engine": "quality_gate",
+      "text_method": "ocr",
+      "quality_score": 0.1,
+      "duration_ms": 298,
+      "fields": {
+        "company_name": {
+          "ok": false,
+          "expected": "شركه الوادي للتجاره والتوزيع",
+          "got": null,
+          "conf": null,
+          "needs_review": true,
+          "engines_agree": null,
+          "validated": false
+        },
+        "legal_form": {
+          "ok": false,
+          "expected": "شركه ذات مسئوليه محدوده",
+          "got": null,
+          "conf": null,
+          "needs_review": false,
+          "engines_agree": null,
+          "validated": null
+        },
+        "register_number": {
+          "ok": false,
+          "expected": "624006",
+          "got": null,
+          "conf": null,
+          "needs_review": true,
+          "engines_agree": null,
+          "validated": false
+        },
+        "issue_date": {
+          "ok": false,
+          "expected": "2021-09-22",
+          "got": null,
+          "conf": null,
+          "needs_review": true,
+          "engines_agree": null,
+          "validated": false
+        },
+        "expiry_date": {
+          "ok": false,
+          "expected": "2026-09-22",
+          "got": null,
+          "conf": null,
+          "needs_review": false,
+          "engines_agree": null,
+          "validated": null
+        },
+        "activity": {
+          "ok": false,
+          "expected": "تجاره وتوزيع السلع الاستهلاكيه",
+          "got": null,
+          "conf": null,
+          "needs_review": false,
+          "engines_agree": null,
+          "validated": null
+        },
+        "governorate": {
+          "ok": false,
+          "expected": "الاسكندريه",
+          "got": null,
+          "conf": null,
+          "needs_review": false,
+          "engines_agree": null,
+          "validated": null
+        },
+        "address": {
+          "ok": false,
+          "expected": "119 شارع التحرير سموحه",
+          "got": null,
+          "conf": null,
+          "needs_review": false,
+          "engines_agree": null,
+          "validated": null
+        },
+        "capital": {
+          "ok": false,
+          "expected": "250000",
+          "got": null,
+          "conf": null,
+          "needs_review": false,
+          "engines_agree": null,
+          "validated": null
+        },
+        "manager": {
+          "ok": false,
+          "expected": "خالد مصطفي فؤاد",
+          "got": null,
+          "conf": null,
+          "needs_review": false,
+          "engines_agree": null,
+          "validated": null
+        },
+        "tax_id": {
+          "ok": false,
+          "expected": "537895421",
+          "got": null,
+          "conf": null,
+          "needs_review": false,
+          "engines_agree": null,
+          "validated": null
+        },
+        "office": {
+          "ok": false,
+          "expected": "مكتب السجل التجاري سموحه",
+          "got": null,
+          "conf": null,
+          "needs_review": false,
+          "engines_agree": null,
+          "validated": null
+        }
+      }
+    }
+  ]
+}

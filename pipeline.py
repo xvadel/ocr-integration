@@ -61,6 +61,10 @@ SCHEMA_PATH = HERE / "registration_schema.json"
 if not SCHEMA_PATH.exists():
     SCHEMA_PATH = HERE / "registration_output.schema.json"
 
+# Configure cache directories for DL OCR models locally in project
+os.environ.setdefault("PADDLE_PDX_CACHE_HOME", str(HERE / ".paddlex"))
+os.environ.setdefault("PADDLE_PDX_DISABLE_MODEL_SOURCE_CHECK", "True")
+
 AR_DIGITS = str.maketrans("٠١٢٣٤٥٦٧٨٩۰۱۲۳۴۵۶۷۸۹", "01234567890123456789")
 
 GOVERNORATES = [
@@ -247,8 +251,10 @@ class DocumentFieldExtractor:
 
     def _extract_company_name(self) -> Dict[str, Any]:
         # Search for company name patterns
-        anchors = ["اسم الشركة / المنشأة", "اسم الشركة", "اسم المنشأة", "الاسم التجاري", "اسم الشركه"]
+        anchors = ["اسم الشركة / المنشأة", "اسم الشركة المنشأة", "اسم الشركة", "اسم المنشأة", "الاسم التجاري", "اسم الشركه"]
         raw = self._find_value_near_anchor(anchors)
+        if raw in ("المنشأة", "المنشاه", "الشركة", "الشركه"):
+            raw = None
         is_legal_form = any(norm_arabic(lf) in norm_arabic(raw or "") for lf in ["مسئولية محدودة", "مساهمة مصرية", "منشأة فردية", "تضامن"])
         if is_legal_form or any(a in (raw or "") for a in ["رقم القيد", "تاريخ", "الشكل القانوني"]):
             raw = None
@@ -501,25 +507,32 @@ class DocumentFieldExtractor:
     def _extract_capital(self) -> Dict[str, Any]:
         anchors = ["رأس المال", "رأس مال الشركة", "رأس مال"]
         raw = self._find_value_near_anchor(anchors)
-        if not raw:
+        val = parse_numeric_capital(raw) if raw else None
+
+        if val is None:
             m = re.search(r"([0-9٠-٩,٬.]+\s*(?:جنيه|جنيه مصري|EGP|LE))", self.raw_text)
             if m:
                 raw = m.group(1)
+                val = parse_numeric_capital(raw)
+            else:
+                m2 = re.search(r"(?:جنيه|جنيه مصري)\s*([0-9٠-٩,٬.]+)", self.raw_text)
+                if m2:
+                    raw = m2.group(1)
+                    val = parse_numeric_capital(raw)
 
-        if raw:
-            val = parse_numeric_capital(raw)
-            if val is not None:
-                grounded = check_grounding(val, raw, self.raw_text)
-                return {
-                    "value": val,
-                    "raw": raw,
-                    "unit": "EGP",
-                    "status": "ok" if grounded else "suspect",
-                    "confidence": 0.92 if grounded else 0.5,
-                    "grounded": grounded,
-                    "issues": [] if grounded else ["not_grounded"],
-                    "page": 1
-                }
+        if raw and val is not None:
+            grounded = check_grounding(val, raw, self.raw_text)
+            return {
+                "value": val,
+                "raw": raw,
+                "unit": "EGP",
+                "status": "ok" if grounded else "suspect",
+                "confidence": 0.92 if grounded else 0.5,
+                "grounded": grounded,
+                "issues": [] if grounded else ["not_grounded"],
+                "page": 1
+            }
+        elif raw:
             return {
                 "value": None, "raw": raw, "status": "suspect", "unit": "EGP",
                 "confidence": 0.4, "grounded": False, "issues": ["format_mismatch"], "page": 1
@@ -604,19 +617,21 @@ class DocumentFieldExtractor:
                     # 1. Check if value is on the same line after delimiter
                     rem = line.split(anchor, 1)[1].strip(delimiters)
                     if rem and len(rem) >= 2 and not any(lbl in rem for lbl in doc_labels if lbl != anchor):
-                        return rem
+                        if rem not in ("المنشأة", "المنشاه", "التجاري", "الصلاحية"):
+                            return rem
                     # 2. Check if value is on the same line before delimiter (visual RTL order)
                     pre = line.split(anchor, 1)[0].strip(delimiters)
                     if pre and len(pre) >= 2 and not any(lbl in pre for lbl in doc_labels if lbl != anchor):
                         # Make sure pre is not just a document header
                         if not any(hdr in pre for hdr in ["نموذج وهمي", "سجل تجاري"]):
-                            return pre
+                            if pre not in ("المنشأة", "المنشاه", "التجاري", "الصلاحية"):
+                                return pre
                     # 3. Else check subsequent lines (skip label parts like 'التجاري' or 'المنشأة')
                     for j in range(i + 1, min(len(self.lines), i + 4)):
                         cand = self.lines[j].strip(delimiters)
                         if cand:
                             # Skip if this line is just continuation of anchor title
-                            if cand in ("التجاري", "المنشأة", "الصلاحية"):
+                            if cand in ("التجاري", "المنشأة", "المنشاه", "الصلاحية"):
                                 continue
                             # Skip if this line is another known field label
                             if any(lbl in cand for lbl in doc_labels if cand.startswith(lbl)):
@@ -735,7 +750,8 @@ class RegistrationPipeline:
     def _get_easyocr_reader(self):
         if self._easyocr_reader is None:
             import easyocr
-            self._easyocr_reader = easyocr.Reader(["ar", "en"], gpu=False)
+            model_dir = str(HERE / ".easyocr")
+            self._easyocr_reader = easyocr.Reader(["ar", "en"], gpu=False, model_storage_directory=model_dir, user_network_directory=model_dir)
         return self._easyocr_reader
 
     def _get_paddle_ocr(self):
@@ -759,6 +775,10 @@ class RegistrationPipeline:
 
     def _run_paddleocr(self, image):
         """Run PaddleOCR and return normalized text + mean confidence."""
+        import cv2
+        if hasattr(image, "ndim") and image.ndim == 2:
+            image = cv2.cvtColor(image, cv2.COLOR_GRAY2BGR)
+
         ocr = self._get_paddle_ocr()
         prediction = ocr.predict(input=image)
 

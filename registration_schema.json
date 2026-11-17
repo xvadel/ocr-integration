@@ -1,51 +1,81 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "Vendra registration output (v0.1, تجريبي)",
-  "description": "مخرج مسار التسجيل والـ OCR (مهمة 03) الذي يُسلَّم لمسار التحقق والمطابقة (مهمة 02).",
+  "$id": "https://regocr.local/schemas/registration_schema.json",
+  "title": "RegOCR Commercial Register Extraction Output (v0.3)",
+  "description": "Strict output contract for RegOCR (Stage 1) aligned with src/regocr/models.py ExtractionResult.",
   "type": "object",
-  "required": ["schema_version", "submission_id", "created_at", "status", "document", "extraction", "fields", "review"],
+  "required": [
+    "schema_version",
+    "document_id",
+    "submission_id",
+    "created_at",
+    "status",
+    "document",
+    "extraction",
+    "fields",
+    "review"
+  ],
   "additionalProperties": false,
   "properties": {
-    "schema_version": { "const": "0.1" },
+    "schema_version": { "const": "0.3" },
+    "document_id": { "type": "string", "minLength": 8 },
     "submission_id": { "type": "string", "minLength": 4 },
     "created_at": { "type": "string", "format": "date-time" },
-    "test_data": { "type": "boolean", "description": "true لو البيانات تجريبية/اصطناعية" },
-    "status": {
-      "enum": ["accepted", "needs_review", "rejected"],
-      "description": "accepted: تُسلَّم تلقائيًا. needs_review: تنتظر مراجعة بشرية. rejected: مرفوضة وتُطلب إعادة رفع."
-    },
-    "reasons": {
-      "type": "array",
-      "items": { "type": "string" },
-      "description": "أسباب الحالة، مثل: issue_date:not_grounded أو image_quality_too_low"
-    },
+    "test_data": { "type": "boolean" },
+    "status": { "enum": ["accepted", "needs_review", "rejected"] },
+    "reasons": { "type": "array", "items": { "type": "string" } },
+    "reupload_hint": { "type": ["string", "null"] },
     "document": {
       "type": "object",
-      "required": ["type", "file_format", "pages"],
+      "required": ["type", "file_format", "pages", "page_used", "pages_processed", "quality"],
       "additionalProperties": false,
       "properties": {
         "type": { "enum": ["commercial_register", "tax_card", "unknown"] },
         "file_format": { "enum": ["image", "pdf"] },
-        "pdf_kind": { "enum": ["digital", "scanned", "digital_garbled", null] },
+        "pdf_kind": { "enum": ["digital", "scanned", "digital_garbled", "mixed", null] },
         "pages": { "type": "integer", "minimum": 1 },
         "page_used": { "type": "integer", "minimum": 1 },
+        "pages_processed": { "type": "array", "items": { "type": "integer", "minimum": 1 } },
         "quality": {
           "type": "object",
+          "required": ["score", "issues"],
           "additionalProperties": false,
           "properties": {
             "score": { "type": "number", "minimum": 0, "maximum": 1 },
-            "issues": { "type": "array", "items": { "enum": ["blurry", "low_resolution", "skewed", "dark", "cropped", "noisy"] } }
+            "issues": {
+              "type": "array",
+              "items": { "enum": ["blurry", "low_resolution", "skewed", "dark", "cropped", "noisy", "uneven_illumination"] }
+            }
           }
+        }
+      }
+    },
+    "preprocessing": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["page", "steps_applied", "skew_angle", "blur_score", "illumination_score", "perspective_corrected", "quality_flags"],
+        "additionalProperties": false,
+        "properties": {
+          "page": { "type": "integer", "minimum": 1 },
+          "steps_applied": { "type": "array", "items": { "type": "string" } },
+          "skew_angle": { "type": "number" },
+          "blur_score": { "type": "number" },
+          "illumination_score": { "type": "number" },
+          "perspective_corrected": { "type": "boolean" },
+          "orientation_angle": { "type": "integer" },
+          "stamp_suppressed": { "type": "boolean" },
+          "quality_flags": { "type": "array", "items": { "type": "string" } }
         }
       }
     },
     "extraction": {
       "type": "object",
-      "required": ["text_method"],
+      "required": ["text_method", "languages", "duration_ms"],
       "additionalProperties": false,
       "properties": {
-        "text_method": { "enum": ["text_layer", "ocr", "vision_llm", "none"] },
-        "engine": { "type": ["string", "null"], "description": "مثل pymupdf أو tesseract أو azure_read" },
+        "text_method": { "enum": ["text_layer", "ocr", "mixed", "vision_llm", "none"] },
+        "engine": { "type": ["string", "null"] },
         "languages": { "type": "array", "items": { "type": "string" } },
         "ocr_confidence_mean": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
         "duration_ms": { "type": "integer", "minimum": 0 }
@@ -54,26 +84,12 @@
     "fields": {
       "type": "object",
       "required": ["company_name", "register_number", "issue_date"],
-      "additionalProperties": false,
-      "properties": {
-        "company_name": { "$ref": "#/$defs/field" },
-        "legal_form": { "$ref": "#/$defs/field" },
-        "register_number": { "$ref": "#/$defs/field" },
-        "issue_date": { "$ref": "#/$defs/field" },
-        "expiry_date": { "$ref": "#/$defs/field" },
-        "activity": { "$ref": "#/$defs/field" },
-        "governorate": { "$ref": "#/$defs/field" },
-        "address": { "$ref": "#/$defs/field" },
-        "capital": { "$ref": "#/$defs/field" },
-        "manager": { "$ref": "#/$defs/field" },
-        "tax_id": { "$ref": "#/$defs/field" },
-        "issuing_office": { "$ref": "#/$defs/field" }
-      }
+      "additionalProperties": { "$ref": "#/$defs/field" }
     },
-    "raw_text": { "type": ["string", "null"], "description": "النص الخام الناتج، للمراجعة وللتتبع" },
+    "raw_text": { "type": ["string", "null"] },
     "review": {
       "type": "object",
-      "required": ["required"],
+      "required": ["required", "fields_to_review"],
       "additionalProperties": false,
       "properties": {
         "required": { "type": "boolean" },
@@ -84,20 +100,39 @@
     }
   },
   "$defs": {
-    "field": {
+    "candidate": {
       "type": "object",
-      "required": ["value", "status"],
+      "required": ["value", "engine", "confidence"],
       "additionalProperties": false,
       "properties": {
-        "value": { "type": ["string", "number", "null"], "description": "القيمة بعد التطبيع: أرقام عادية، تواريخ ISO، رأس المال رقم" },
-        "raw": { "type": ["string", "null"], "description": "القيمة كما قُرئت قبل التطبيع" },
-        "status": { "enum": ["ok", "suspect", "missing"] },
-        "confidence": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
-        "grounded": { "type": "boolean", "description": "هل القيمة موجودة في النص الخام؟" },
-        "issues": { "type": "array", "items": { "type": "string" } },
+        "value": { "type": "string" },
+        "raw": { "type": ["string", "null"] },
+        "engine": { "type": "string" },
+        "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+        "bbox": { "type": ["array", "null"], "items": { "type": "number" }, "minItems": 4, "maxItems": 4 },
         "page": { "type": "integer", "minimum": 1 },
-        "code": { "type": "string", "description": "كود موحد (مثلًا لـ legal_form: llc, jsc, sole_proprietorship, partnership)" },
-        "unit": { "type": "string", "description": "وحدة القيمة (مثل EGP لرأس المال)" }
+        "variant": { "type": "string" }
+      }
+    },
+    "field": {
+      "type": "object",
+      "required": ["value", "status", "needs_review", "grounded", "candidates"],
+      "additionalProperties": false,
+      "properties": {
+        "value": { "type": ["string", "number", "null"] },
+        "raw": { "type": ["string", "null"] },
+        "confidence": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
+        "engines_agree": { "type": ["boolean", "null"] },
+        "validated": { "type": ["boolean", "null"] },
+        "needs_review": { "type": "boolean" },
+        "candidates": { "type": "array", "items": { "$ref": "#/$defs/candidate" } },
+        "page": { "type": "integer", "minimum": 1 },
+        "bbox": { "type": ["array", "null"], "items": { "type": "number" }, "minItems": 4, "maxItems": 4 },
+        "status": { "enum": ["ok", "suspect", "missing"] },
+        "grounded": { "type": "boolean" },
+        "issues": { "type": "array", "items": { "type": "string" } },
+        "code": { "type": ["string", "null"] },
+        "unit": { "type": ["string", "null"] }
       }
     }
   }
