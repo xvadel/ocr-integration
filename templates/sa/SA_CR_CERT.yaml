@@ -1,0 +1,87 @@
+id: SA_CR_CERT
+version: "1.0"
+country: sa
+document_type: commercial_register
+title_ar: "شهادة السجل التجاري"
+title_en: "Commercial Registration Certificate"
+languages: ["ar"]
+
+classification_keywords:
+  ar:
+    - "شهادة السجل التجاري"
+    - "وزارة التجارة"
+    - "الرقم الوطني الموحد"
+    - "البيانات الأساسية للسجل التجاري"
+    - "نوع الكيان"
+    - "حالة السجل"
+  en:
+    - "Ministry of Commerce"
+    - "Commercial Registration"
+
+fields:
+  - key: establishment_name
+    label_synonyms:
+      ar: ["اسم المنشأة", "الاسم التجاري", "اسم السجل التجاري", "الاسم"]
+      en: ["Establishment Name", "Commercial Name", "Trade Name"]
+    type: string
+    required: true
+    critical: true
+    normalizer: norm_arabic
+    bbox_hint: [0.10, 0.15, 0.90, 0.35]
+
+  - key: unified_national_number
+    label_synonyms:
+      ar: ["الرقم الوطني الموحد", "الرقم الموحد", "رقم المنشأة"]
+      en: ["Unified National Number", "Unified Number"]
+    type: string
+    regex: "^7\\d{9}$"
+    required: true
+    critical: true
+    validators: ["unified_number_format", "cross_check_qr"]
+    bbox_hint: [0.40, 0.20, 0.90, 0.50]
+
+  - key: issue_date
+    label_synonyms:
+      ar: ["تاريخ الإصدار", "تاريخ الاصدار", "تاريخ القيد"]
+      en: ["Issue Date", "Date of Issue"]
+    type: date
+    required: true
+    critical: true
+    date_formats: ["DD/MM/YYYY", "YYYY-MM-DD", "YYYY/MM/DD"]
+    validators: ["valid_calendar_date"]
+    bbox_hint: [0.30, 0.25, 0.90, 0.60]
+
+  - key: entity_type
+    label_synonyms:
+      ar: ["نوع الكيان", "الكيان القانوني", "الشكل القانوني"]
+      en: ["Entity Type", "Legal Form"]
+    type: string
+    required: true
+    critical: false
+    normalizer: norm_arabic
+    bbox_hint: [0.30, 0.30, 0.90, 0.65]
+
+  - key: register_status
+    label_synonyms:
+      ar: ["حالة السجل", "حالة القيد"]
+      en: ["Register Status", "Status"]
+    type: string
+    required: true
+    critical: false
+    validators: ["active_status_check"]
+    bbox_hint: [0.30, 0.35, 0.90, 0.70]
+
+qr_code:
+  present: true
+  label_under_qr: "البيانات الأساسية للسجل التجاري"
+  cross_check_field: unified_national_number
+
+ignore_regions:
+  - name: header_emblem
+    bbox: [0.40, 0.00, 0.60, 0.15]
+  - name: footer_disclaimer
+    bbox: [0.00, 0.90, 1.00, 1.00]
+
+completeness_rule:
+  min_critical_fields: 3
+  min_required_fields: 2

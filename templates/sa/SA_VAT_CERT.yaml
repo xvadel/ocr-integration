@@ -1,0 +1,140 @@
+id: SA_VAT_CERT
+version: "1.0"
+country: sa
+document_type: vat_certificate
+title_ar: "شهادة تسجيل في ضريبة القيمة المضافة"
+title_en: "VAT Registration Certificate"
+languages: ["ar", "en"]
+
+classification_keywords:
+  ar:
+    - "شهادة تسجيل في ضريبة القيمة المضافة"
+    - "ضريبة القيمة المضافة"
+    - "هيئة الزكاة والضريبة والجمارك"
+    - "الرقم المميز"
+    - "رقم التسجيل الضريبي"
+    - "تاريخ نفاذ التسجيل"
+    - "اسم المكلف"
+  en:
+    - "VAT Registration Certificate"
+    - "Zakat, Tax and Customs Authority"
+    - "VAT"
+    - "TIN"
+    - "Taxpayer Name"
+    - "ZATCA"
+
+fields:
+  - key: tin
+    label_synonyms:
+      ar: ["الرقم المميز"]
+      en: ["TIN"]
+    type: string
+    required: false
+    critical: false
+    regex: "^\\d{10}$"
+    bbox_hint: [0.05, 0.10, 0.45, 0.25]
+
+  - key: certificate_no
+    label_synonyms:
+      ar: ["رقم الشهادة"]
+      en: ["Certificate No", "Certificate No."]
+    type: string
+    required: false
+    critical: false
+    bbox_hint: [0.05, 0.15, 0.45, 0.30]
+
+  - key: certificate_date
+    label_synonyms:
+      ar: ["تاريخ الشهادة"]
+      en: ["Certificate Date"]
+    type: date
+    required: false
+    critical: false
+    date_formats: ["DD/MM/YYYY", "YYYY/MM/DD", "YYYY-MM-DD"]
+    bbox_hint: [0.05, 0.20, 0.45, 0.35]
+
+  - key: taxpayer_name
+    label_synonyms:
+      ar: ["اسم المكلف"]
+      en: ["Taxpayer Name"]
+    type: string
+    required: true
+    critical: true
+    normalizer: norm_arabic
+    bbox_hint: [0.20, 0.30, 0.80, 0.42]
+
+  - key: vat_registration_number
+    label_synonyms:
+      ar: ["رقم التسجيل الضريبي", "الرقم الضريبي"]
+      en: ["VAT Registration Number", "VAT Number"]
+    type: string
+    required: true
+    critical: true
+    regex: "^3\\d{13}3$"
+    validators: ["vat_15_digits_zatca"]
+    bbox_hint: [0.30, 0.36, 0.70, 0.44]
+
+  - key: effective_registration_date
+    label_synonyms:
+      ar: ["تاريخ نفاذ التسجيل"]
+      en: ["Effective Registration Date", "Effective Date"]
+    type: date
+    required: true
+    critical: true
+    date_formats: ["YYYY/MM/DD", "DD/MM/YYYY", "YYYY-MM-DD"]
+    validators: ["valid_calendar_date"]
+    bbox_hint: [0.30, 0.39, 0.70, 0.47]
+
+  - key: taxpayer_address
+    label_synonyms:
+      ar: ["عنوان المكلف", "العنوان"]
+      en: ["Taxpayer Address", "Address"]
+    type: string
+    required: false
+    critical: false
+    bbox_hint: [0.25, 0.42, 0.75, 0.50]
+
+  - key: cr_license_id_no
+    label_synonyms:
+      ar: ["رقم السجل التجاري / الرخصة / العقد / الهوية", "رقم السجل التجاري", "رقم الرخصة"]
+      en: ["CR / License / Contract / ID No", "CR/License/Contract/ID No"]
+    type: string
+    required: false
+    critical: false
+    bbox_hint: [0.30, 0.46, 0.70, 0.54]
+
+  - key: tax_period
+    label_synonyms:
+      ar: ["الفترة الضريبية"]
+      en: ["Tax Period"]
+    type: enum
+    enum_values:
+      Monthly: "شهري"
+      Quarterly: "ربع سنوي"
+    required: true
+    critical: false
+    bbox_hint: [0.35, 0.50, 0.65, 0.57]
+
+  - key: first_filing_due_date
+    label_synonyms:
+      ar: ["تاريخ استحقاق أول إقرار ضريبي", "تاريخ استحقاق اول اقرار ضريبي"]
+      en: ["First Filing Due Date", "First Filing Date"]
+    type: date
+    required: true
+    critical: false
+    date_formats: ["YYYY/MM/DD", "DD/MM/YYYY", "YYYY-MM-DD"]
+    validators: ["filing_after_effective_date"]
+    bbox_hint: [0.30, 0.53, 0.70, 0.60]
+
+ignore_regions:
+  - name: top_barcode
+    bbox: [0.70, 0.05, 0.98, 0.15]
+  - name: bottom_qr_barcode
+    bbox: [0.02, 0.85, 0.25, 0.98]
+  - name: footer_serial_and_urls
+    bbox: [0.00, 0.85, 1.00, 1.00]
+    tokens_to_ignore: ["zatca.gov.sa", "@zatca_sa", "www.zatca.gov.sa"]
+
+completeness_rule:
+  min_critical_fields: 3
+  min_required_fields: 2

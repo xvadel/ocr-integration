@@ -1,0 +1,136 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://regocr.local/schemas/sa/sa_registration.schema.json",
+  "title": "Saudi Arabia Commercial Registration Package Output (v0.4)",
+  "description": "Standardized output contract for Saudi Arabia registration package (SA_CR_CERT + SA_VAT_CERT).",
+  "type": "object",
+  "required": [
+    "country",
+    "schema_id",
+    "schema_version",
+    "schema_status",
+    "package_status",
+    "status",
+    "reasons",
+    "documents",
+    "handoff",
+    "review"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "country": { "const": "sa" },
+    "schema_id": { "const": "sa_registration" },
+    "schema_version": { "const": "0.4" },
+    "schema_status": { "enum": ["stable", "experimental"] },
+    "package_status": { "enum": ["accepted", "needs_review", "rejected"] },
+    "document_type": { "type": ["string", "null"] },
+    "template_id": { "type": ["string", "null"] },
+    "document_id": { "type": "string" },
+    "submission_id": { "type": "string" },
+    "created_at": { "type": "string" },
+    "test_data": { "type": "boolean" },
+    "status": { "enum": ["accepted", "needs_review", "rejected"] },
+    "reasons": { "type": "array", "items": { "type": "string" } },
+    "reupload_hint": { "type": ["string", "null"] },
+    "document": { "type": "object" },
+    "preprocessing": { "type": "array" },
+    "extraction": { "type": "object" },
+    "raw_text": { "type": ["string", "null"] },
+    "documents": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/package_document" }
+    },
+    "handoff": {
+      "type": "object",
+      "required": ["facts", "suspect_fields"],
+      "additionalProperties": false,
+      "properties": {
+        "facts": {
+          "type": "object",
+          "required": [
+            "company_name",
+            "unified_national_number",
+            "vat_registration_number",
+            "country"
+          ],
+          "additionalProperties": true,
+          "properties": {
+            "company_name": { "type": ["string", "null"] },
+            "company_name_en": { "type": ["string", "null"] },
+            "unified_national_number": { "type": ["string", "null"] },
+            "vat_registration_number": { "type": ["string", "null"] },
+            "tin": { "type": ["string", "null"] },
+            "entity_type": { "type": ["string", "null"] },
+            "register_status": { "type": ["string", "null"] },
+            "cr_issue_date": { "type": ["string", "null"] },
+            "vat_effective_date": { "type": ["string", "null"] },
+            "tax_period": { "type": ["string", "null"] },
+            "taxpayer_address": { "type": ["string", "null"] },
+            "country": { "const": "sa" }
+          }
+        },
+        "suspect_fields": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "review": {
+      "type": "object",
+      "required": ["required", "fields_to_review"],
+      "additionalProperties": false,
+      "properties": {
+        "required": { "type": "boolean" },
+        "fields_to_review": { "type": "array", "items": { "type": "string" } },
+        "reviewed_by": { "type": ["string", "null"] },
+        "reviewed_at": { "type": ["string", "null"], "format": "date-time" }
+      }
+    }
+  },
+  "$defs": {
+    "package_document": {
+      "type": "object",
+      "required": ["document_type", "template_id", "status", "reasons", "fields", "review"],
+      "additionalProperties": true,
+      "properties": {
+        "document_type": { "type": "string" },
+        "template_id": { "type": ["string", "null"] },
+        "page_num": { "type": "integer" },
+        "status": { "enum": ["accepted", "needs_review", "rejected"] },
+        "reasons": { "type": "array", "items": { "type": "string" } },
+        "qr_present": { "type": "boolean" },
+        "qr_decoded": { "type": "boolean" },
+        "qr_cross_check": { "type": ["boolean", "null"] },
+        "fields": {
+          "type": "object",
+          "additionalProperties": { "$ref": "#/$defs/field_item" }
+        },
+        "review": {
+          "type": "object",
+          "required": ["required", "fields_to_review"],
+          "properties": {
+            "required": { "type": "boolean" },
+            "fields_to_review": { "type": "array", "items": { "type": "string" } }
+          }
+        }
+      }
+    },
+    "field_item": {
+      "type": "object",
+      "required": ["value", "status", "needs_review", "grounded"],
+      "additionalProperties": true,
+      "properties": {
+        "value": { "type": ["string", "number", "null"] },
+        "raw": { "type": ["string", "null"] },
+        "confidence": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
+        "status": { "enum": ["ok", "missing", "unreadable", "invalid", "suspect"] },
+        "needs_review": { "type": "boolean" },
+        "grounded": { "type": "boolean" },
+        "bbox": { "type": ["array", "null"], "items": { "type": "number" }, "minItems": 4, "maxItems": 4 },
+        "page": { "type": "integer" },
+        "issues": { "type": "array", "items": { "type": "string" } },
+        "calendar": { "type": ["string", "null"] }
+      }
+    }
+  }
+}

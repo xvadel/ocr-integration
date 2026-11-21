@@ -12,13 +12,14 @@ import yaml
 
 @dataclass
 class DocumentTemplate:
-    """Specification of a document template (e.g. SA_CR_CERT, EG_CR)."""
+    """Specification of a document template (e.g. SA_CR_CERT, SA_VAT_CERT, EG_CR)."""
 
     template_id: str
     country: str
     document_type: str
     title_ar: str
     keywords: List[str] = field(default_factory=list)
+    critical_fields: List[str] = field(default_factory=list)
     required_fields: List[str] = field(default_factory=list)
     optional_fields: List[str] = field(default_factory=list)
     fields_spec: Dict[str, Any] = field(default_factory=dict)
@@ -47,6 +48,7 @@ class BaseCountryModule:
                 document_type=spec.get("document_type", "commercial_register"),
                 title_ar=spec.get("title_ar", ""),
                 keywords=spec.get("keywords", []),
+                critical_fields=spec.get("critical_fields", []),
                 required_fields=spec.get("required_fields", []),
                 optional_fields=spec.get("optional_fields", []),
                 fields_spec=spec.get("fields", {}),
@@ -55,17 +57,18 @@ class BaseCountryModule:
             )
 
     def detect_template(self, raw_text: str) -> Optional[DocumentTemplate]:
-        """Detect best matching document template based on Arabic keywords and headers."""
+        """Detect best matching document template based on Arabic/English keywords."""
         if not raw_text:
             return None
+        raw_norm = raw_text.lower()
         best_match = None
         max_matches = 0
         for tmpl in self.templates.values():
-            matches = sum(1 for kw in tmpl.keywords if kw in raw_text)
+            matches = sum(1 for kw in tmpl.keywords if kw.lower() in raw_norm)
             if matches > max_matches:
                 max_matches = matches
                 best_match = tmpl
-        return best_match if max_matches > 0 else next(iter(self.templates.values()), None)
+        return best_match if max_matches > 0 else None
 
 
 class CountryRegistry:
