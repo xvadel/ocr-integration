@@ -9,18 +9,34 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
+import time
+import warnings
 from pathlib import Path
+
+import psutil
 
 from regocr.pipeline import RegOCRPipeline
 
 
 def main():
     parser = argparse.ArgumentParser(
-        description="RegOCR: Egyptian Commercial Register OCR & Structured Extraction"
+        description="RegOCR: Multi-Country Commercial Register OCR & Structured Extraction"
     )
     parser.add_argument("path", type=Path, help="Input file (image or PDF) or directory")
     parser.add_argument("--out", type=Path, default=None, help="Output JSON file path")
+    parser.add_argument(
+        "--country",
+        choices=["eg", "sa", "ae"],
+        default=None,
+        help="Country selector: eg (Egypt), sa (Saudi Arabia), ae (UAE). Defaults to 'eg'.",
+    )
+    parser.add_argument(
+        "--profile",
+        action="store_true",
+        help="Profile execution time (wall/CPU) and peak memory to stderr.",
+    )
     parser.add_argument(
         "--engine",
         choices=["auto", "paddleocr", "easyocr", "tesseract", "pypdfium2"],
@@ -30,6 +46,16 @@ def main():
     parser.add_argument("--dpi", type=int, default=300, help="Rendering DPI for PDF scans")
 
     args = parser.parse_args()
+
+    # Backward compatibility with deprecation warning when --country is omitted
+    country = args.country
+    if country is None:
+        warnings.warn(
+            "Defaulting to country 'eg' is deprecated and will require explicit '--country' in v1.0.",
+            DeprecationWarning,
+            stacklevel=1,
+        )
+        country = "eg"
 
     pipeline = RegOCRPipeline(engine=args.engine, dpi=args.dpi)
 
@@ -47,11 +73,27 @@ def main():
         sys.exit(f"Target path does not exist: {target}")
 
     results = {}
-    print(f"\n[RegOCR] Processing {len(files)} file(s) with engine='{args.engine}'...\n")
+    print(f"\n[RegOCR] Processing {len(files)} file(s) for country='{country}', engine='{args.engine}'...\n")
+
+    process = psutil.Process(os.getpid()) if args.profile else None
 
     for f in files:
         try:
+            if args.profile:
+                cpu_t0 = time.process_time()
+                wall_t0 = time.perf_counter()
+                rss_start = process.memory_info().rss / (1024 * 1024)
+
             res = pipeline.process_file(f)
+
+            if args.profile:
+                wall_ms = (time.perf_counter() - wall_t0) * 1000.0
+                cpu_ms = (time.process_time() - cpu_t0) * 1000.0
+                rss_end = process.memory_info().rss / (1024 * 1024)
+                sys.stderr.write(
+                    f"[PROFILE] {f.name}: Wall={wall_ms:.1f}ms, CPU={cpu_ms:.1f}ms, RSS={rss_end:.1f}MB (delta={rss_end - rss_start:+.1f}MB)\n"
+                )
+
             doc_dict = res.model_dump(mode="json")
             results[f.name] = doc_dict
 

@@ -65,6 +65,9 @@ class PipelineConfig:
     min_field_confidence: float = 0.68
     min_doc_quality_accept: float = 0.65
     min_doc_quality_reject: float = 0.35
+    early_exit_crop_verification: bool = True
+    crop_skip_min_confidence: float = 0.88
+    max_image_dimension: int = 2048
     preprocess: PreprocessConfig = field(default_factory=PreprocessConfig)
 
 
@@ -179,8 +182,8 @@ class RegOCRPipeline:
             # Do not waste CPU re-OCR on images that already failed the hard quality rejection gate
             return
 
-        easy_eng = self._get_engine("easyocr")
-        tess_eng = self._get_engine("tesseract")
+        easy_eng = None
+        tess_eng = None
 
         allowlist_map = {
             "register_number": "0123456789٠١٢٣٤٥٦٧٨٩",
@@ -218,9 +221,23 @@ class RegOCRPipeline:
                 p_raw_conf = fld.candidates[0].confidence if fld.candidates else (fld.confidence or 0.7)
                 observations.append((fld.value, fld.raw or str(fld.value), primary_engine, float(p_raw_conf), p_valid, p_issues))
 
+                # Early-exit optimization: if primary extraction is validated and high confidence,
+                # skip heavy secondary crop OCR passes
+                if (
+                    self.config.early_exit_crop_verification
+                    and p_valid
+                    and float(p_raw_conf) >= self.config.crop_skip_min_confidence
+                ):
+                    fld.engines_agree = True
+                    fld.status = "ok"
+                    fld.validated = True
+                    continue
+
             # 2. Secondary engine: EasyOCR cropped numeric recognize (works for BOTH Western & Arabic-Indic!)
             if primary_engine != "easyocr":
                 try:
+                    if easy_eng is None:
+                        easy_eng = self._get_engine("easyocr")
                     eff_bbox = crop_bbox
                     # For wide capital crops containing both currency text ("جنيه مصري") and digits,
                     # try readtext first (so currency letters aren't coerced into fake digits),
@@ -269,6 +286,8 @@ class RegOCRPipeline:
             any_indic = any(has_arabic_indic_digits(obs[1]) for obs in observations)
             if primary_engine != "tesseract" and not any_indic:
                 try:
+                    if tess_eng is None:
+                        tess_eng = self._get_engine("tesseract")
                     raw_t, conf_t = tess_eng.recognize_numeric_crop(
                         prep,
                         crop_bbox,
