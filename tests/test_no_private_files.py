@@ -43,3 +43,9 @@ def test_no_private_files_in_git():
             f"Private or derived files found in git index:\n{lines}\n"
             "Remove them from tracking (add to .gitignore and use git rm --cached)."
         )
+
+
+if __name__ == "__main__":
+    test_no_private_files_in_git()
+    print("  [PASS] test_no_private_files_in_git")
+    print("\nALL PRIVACY TESTS PASSED!")
