@@ -121,6 +121,22 @@ class SaudiCountryModule(BaseCountryModule):
             unified_num = m.group(1)
             unified_raw = m.group(1)
 
+        # 1b. Commercial Registration Number (10 digits)
+        cr_number = None
+        cr_raw = None
+        m_cr = re.search(r"(?:رقم السجل التجاري|رقم السجل|رقم القيد|CR\s*No)[^\d]{0,10}(\d{10})\b", to_ascii_digits(full_text), re.IGNORECASE)
+        if m_cr:
+            cr_number = m_cr.group(1)
+            cr_raw = m_cr.group(1)
+        else:
+            for w in words:
+                txt = to_ascii_digits(getattr(w, "text", ""))
+                m_other = re.search(r"\b([1-689]\d{9})\b", txt)
+                if m_other:
+                    cr_number = m_other.group(1)
+                    cr_raw = m_other.group(1)
+                    break
+
         # 2. QR code detection and number under QR cross-check
         qr_present = False
         qr_decoded = False
@@ -200,6 +216,16 @@ class SaudiCountryModule(BaseCountryModule):
             "needs_review": not bool(establishment_name),
             "page": page_num,
             "issues": [] if establishment_name else ["missing"],
+        }
+        fields["cr_number"] = {
+            "value": cr_number,
+            "raw": cr_raw,
+            "status": "ok" if cr_number else "missing",
+            "confidence": 0.90 if cr_number else None,
+            "grounded": bool(cr_number),
+            "needs_review": False,
+            "page": page_num,
+            "issues": [],
         }
         fields["unified_national_number"] = {
             "value": unified_num,
@@ -454,6 +480,16 @@ class SaudiCountryModule(BaseCountryModule):
                 if m:
                     cr_license_id = m.group(1)
 
+        # Fallback for cr_license_id if table row clustering missed it
+        if not cr_license_id:
+            m_crid = re.search(
+                r"(?:رقم السجل التجاري|رقم السجل|رقم الرخصة|CR\s*(?:/\s*License)?\s*(?:ID\s*)?No\.?)[^\d]{0,20}(\d{10})\b",
+                ascii_text,
+                re.IGNORECASE,
+            )
+            if m_crid:
+                cr_license_id = m_crid.group(1)
+
         # Fallback for taxpayer_name if table lines didn't catch it
         if not taxpayer_name:
             for l in raw_lines:
@@ -537,6 +573,16 @@ class SaudiCountryModule(BaseCountryModule):
             "issues": [],
         }
         fields["cr_license_id_no"] = {
+            "value": cr_license_id,
+            "raw": cr_license_id,
+            "status": "ok" if cr_license_id else "missing",
+            "confidence": 0.85 if cr_license_id else None,
+            "grounded": bool(cr_license_id),
+            "needs_review": False,
+            "page": page_num,
+            "issues": [],
+        }
+        fields["cr_number"] = {
             "value": cr_license_id,
             "raw": cr_license_id,
             "status": "ok" if cr_license_id else "missing",
@@ -669,6 +715,7 @@ class SaudiCountryModule(BaseCountryModule):
         facts: Dict[str, Any] = {
             "company_name": None,
             "company_name_en": None,
+            "cr_number": None,
             "unified_national_number": None,
             "vat_registration_number": None,
             "tin": None,
@@ -686,6 +733,7 @@ class SaudiCountryModule(BaseCountryModule):
             cr_flds = cr_doc.get("fields", {})
             facts["company_name"] = cr_flds.get("establishment_name", {}).get("value")
             facts["unified_national_number"] = cr_flds.get("unified_national_number", {}).get("value")
+            facts["cr_number"] = cr_flds.get("cr_number", {}).get("value")
             facts["cr_issue_date"] = cr_flds.get("issue_date", {}).get("value")
             facts["entity_type"] = cr_flds.get("entity_type", {}).get("value")
             facts["register_status"] = cr_flds.get("register_status", {}).get("value")
@@ -694,6 +742,8 @@ class SaudiCountryModule(BaseCountryModule):
             vat_flds = vat_doc.get("fields", {})
             if not facts["company_name"]:
                 facts["company_name"] = vat_flds.get("taxpayer_name", {}).get("value")
+            if not facts.get("cr_number"):
+                facts["cr_number"] = vat_flds.get("cr_license_id_no", {}).get("value") or vat_flds.get("cr_number", {}).get("value")
             facts["vat_registration_number"] = vat_flds.get("vat_registration_number", {}).get("value")
             facts["tin"] = vat_flds.get("tin", {}).get("value")
             facts["vat_effective_date"] = vat_flds.get("effective_registration_date", {}).get("value")

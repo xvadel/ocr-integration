@@ -57,6 +57,7 @@
           "properties": {
             "company_name": { "type": ["string", "null"] },
             "company_name_en": { "type": ["string", "null"] },
+            "cr_number": { "type": ["string", "null"] },
             "unified_national_number": { "type": ["string", "null"] },
             "vat_registration_number": { "type": ["string", "null"] },
             "tin": { "type": ["string", "null"] },

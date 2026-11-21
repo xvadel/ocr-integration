@@ -29,6 +29,16 @@ fields:
     normalizer: norm_arabic
     bbox_hint: [0.10, 0.15, 0.90, 0.35]
 
+  - key: cr_number
+    label_synonyms:
+      ar: ["رقم السجل التجاري", "رقم السجل", "رقم القيد"]
+      en: ["Commercial Registration No", "CR Number", "CR No"]
+    type: string
+    regex: "^\\d{10}$"
+    required: false
+    critical: false
+    bbox_hint: [0.30, 0.20, 0.90, 0.50]
+
   - key: unified_national_number
     label_synonyms:
       ar: ["الرقم الوطني الموحد", "الرقم الموحد", "رقم المنشأة"]

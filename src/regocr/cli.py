@@ -87,10 +87,11 @@ def main():
             facts = res.handoff.get("facts", {}) if res.handoff else {}
             comp = facts.get("company_name") or "N/A"
             unif = facts.get("unified_national_number") or "N/A"
+            cr = facts.get("cr_number") or "N/A"
             vat = facts.get("vat_registration_number") or "N/A"
             print(
                 f"[{status:<12}] Saudi Package ({len(files)} files) | "
-                f"UNN: {str(unif):<10} | VAT: {str(vat):<15} | Company: {str(comp)[:25]}"
+                f"UNN: {str(unif):<10} | CR: {str(cr):<10} | VAT: {str(vat):<15} | Company: {str(comp)[:25]}"
             )
             if res.reasons:
                 print(f"    Reasons: {', '.join(res.reasons)}")
@@ -129,7 +130,7 @@ def main():
                 elif res.handoff and "facts" in res.handoff:
                     facts = res.handoff["facts"]
                     comp = facts.get("company_name") or "N/A"
-                    reg_num = facts.get("unified_national_number") or facts.get("vat_registration_number") or "N/A"
+                    reg_num = facts.get("cr_number") or facts.get("unified_national_number") or facts.get("vat_registration_number") or "N/A"
                 else:
                     reg_num, comp = "N/A", "N/A"
                 rev = res.review.required

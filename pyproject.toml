@@ -26,6 +26,7 @@ dependencies = [
 
 [project.scripts]
 regocr = "regocr.cli:main"
+regocr-gui = "regocr.gui:main"
 
 [build-system]
 requires = ["setuptools>=61.0"]
