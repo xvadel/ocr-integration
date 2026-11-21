@@ -287,6 +287,37 @@ def test_merged_handoff_schema_valid():
     assert not errors, [e.message for e in errors]
 
 
+def test_post_decision_guards():
+    from regocr.guards import apply_guards
+    # Synthetic doc representing a tax certificate rather than a commercial register
+    doc = {
+        "status": "accepted",
+        "raw_text": "هيئة الزكاة والضريبة والجمارك شهادة تسجيل ضريبة القيمة المضافة vat",
+        "fields": {
+            "company_name": {"value": "شركة تجريبية", "status": "ok", "bbox": [0.1, 0.2, 0.5, 0.25], "engines_agree": True, "candidates": [{"value": "شركة تجريبية", "confidence": 0.9}]},
+            "register_number": {"value": "123456", "status": "ok", "bbox": [0.1, 0.3, 0.3, 0.35], "engines_agree": True, "candidates": [{"value": "123456", "confidence": 0.95}]},
+            "issue_date": {"value": "2024-01-01", "status": "ok", "bbox": [0.1, 0.4, 0.3, 0.45], "engines_agree": True, "candidates": [{"value": "2024-01-01", "confidence": 0.95}]}
+        }
+    }
+    guarded, applied = apply_guards(doc, expected_type="commercial_register")
+    assert guarded["status"] == "rejected", f"Expected rejected, got {guarded['status']}"
+    assert any("wrong_document_type" in x for x in applied)
+
+    # Synthetic doc with a core field in suspicious footer region (> 0.92)
+    doc_cr = {
+        "status": "accepted",
+        "raw_text": "وزارة التجارة مستخرج السجل التجاري رقم القيد 101010",
+        "fields": {
+            "company_name": {"value": "شركة الفا", "status": "ok", "bbox": [0.1, 0.95, 0.5, 0.98]},
+            "register_number": {"value": "101010", "status": "ok", "bbox": [0.1, 0.2, 0.3, 0.25]},
+            "issue_date": {"value": "2024-01-01", "status": "ok", "bbox": [0.1, 0.3, 0.3, 0.35]}
+        }
+    }
+    guarded_cr, applied_cr = apply_guards(doc_cr, expected_type="commercial_register")
+    assert guarded_cr["status"] == "needs_review"
+    assert "company_name:suspicious_region" in applied_cr
+
+
 if __name__ == "__main__":
     tests = [
         test_to_ascii_digits,
@@ -303,6 +334,7 @@ if __name__ == "__main__":
         test_multipage_synthetic_pdf_field_on_page_2,
         test_digital_and_visual_pdfs_and_json_schema,
         test_merged_handoff_schema_valid,
+        test_post_decision_guards,
     ]
     for fn in tests:
         fn()
