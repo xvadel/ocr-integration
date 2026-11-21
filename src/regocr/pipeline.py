@@ -489,8 +489,8 @@ class RegOCRPipeline:
             except Exception:
                 pass
 
-        # Priority 2: ALWAYS run cropped second-opinion verification on numeric/ID fields (in auto mode)
-        if self.config.verify_numeric_fields and self.engine == "auto":
+        # Priority 2: Cropped second-opinion verification on numeric/ID fields (for Egyptian forms in auto mode)
+        if self.config.verify_numeric_fields and self.engine == "auto" and self.country != "sa":
             self._verify_numeric_fields_on_crops(
                 prep=prep,
                 fields=best_fields,
@@ -589,6 +589,7 @@ class RegOCRPipeline:
         is_pdf = file_path.suffix.lower() == ".pdf"
         t0 = time.perf_counter()
 
+        pages_raw_data: List[Dict[str, Any]] = []
         page_fields_list: List[Tuple[int, Dict[str, FieldResult]]] = []
         raw_text_parts: List[str] = []
         preprocessing_reports: List[PreprocessingReport] = []
@@ -622,6 +623,7 @@ class RegOCRPipeline:
                     fields, _ = self.extractor.extract_from_ocr(ocr_res, quality_score=0.98)
                     page_fields_list.append((pnum, fields))
                     raw_text_parts.append(txt)
+                    pages_raw_data.append({"page_num": pnum, "raw_text": txt, "words": ocr_res.words, "image": None})
                     page_methods.append("text_layer")
                     page_engines.append(pinfo["recommended_engine"])
                     page_qualities.append({"score": 0.98, "issues": []})
@@ -630,6 +632,7 @@ class RegOCRPipeline:
                     fields, ocr_res, prep = self._process_ocr_page(cv_img, page_num=pnum)
                     page_fields_list.append((pnum, fields))
                     raw_text_parts.append(ocr_res.text)
+                    pages_raw_data.append({"page_num": pnum, "raw_text": ocr_res.text, "words": ocr_res.words, "image": cv_img})
                     preprocessing_reports.append(PreprocessingReport(**prep.report))
                     page_methods.append("ocr")
                     page_engines.append(ocr_res.engine)
@@ -640,6 +643,7 @@ class RegOCRPipeline:
             fields, ocr_res, prep = self._process_ocr_page(cv_img, page_num=1)
             page_fields_list.append((1, fields))
             raw_text_parts.append(ocr_res.text)
+            pages_raw_data.append({"page_num": 1, "raw_text": ocr_res.text, "words": ocr_res.words, "image": cv_img})
             preprocessing_reports.append(PreprocessingReport(**prep.report))
             page_methods.append("ocr")
             page_engines.append(ocr_res.engine)
@@ -724,13 +728,71 @@ class RegOCRPipeline:
             # Guards are advisory – never crash the pipeline
             pass
 
-        # Template detection
+        # Saudi package processing branch
+        if self.country == "sa" and hasattr(self.country_module, "process_package"):
+            pkg_res = self.country_module.process_package(pages_raw_data, quality_score=agg_q_score)
+            status = pkg_res["status"]
+            reasons = pkg_res["reasons"]
+            reupload_hint = pkg_res.get("reupload_hint") or reupload_hint
+            review_info = ReviewInfo(
+                required=pkg_res["review"]["required"],
+                fields_to_review=pkg_res["review"]["fields_to_review"],
+            )
+            return ExtractionResult(
+                schema_version=SCHEMA_VERSION,
+                schema_id="sa_registration",
+                schema_status="stable",
+                package_status=pkg_res["package_status"],
+                country="sa",
+                document_type="sa_registration_package",
+                template_id=None,
+                document_id=doc_id,
+                submission_id=sub_id,
+                created_at=now_dt,
+                test_data=is_test_data,
+                status=status,
+                reasons=reasons,
+                reupload_hint=reupload_hint,
+                document=DocumentInfo(
+                    type="commercial_register",
+                    file_format=file_format,
+                    pdf_kind=pdf_kind,
+                    pages=pages_count,
+                    page_used=1,
+                    pages_processed=list(range(1, pages_count + 1)),
+                    quality=quality_info,
+                ),
+                preprocessing=preprocessing_reports,
+                extraction=ExtractionInfo(
+                    text_method=text_method,
+                    engine=used_engine,
+                    languages=["ar", "en"],
+                    ocr_confidence_mean=ocr_conf_mean,
+                    duration_ms=duration_ms,
+                ),
+                fields=None,
+                documents=pkg_res["documents"],
+                handoff=pkg_res["handoff"],
+                raw_text=raw_text,
+                review=review_info,
+            )
+
+        # Template detection for generic / Egyptian / UAE documents
         matched_template = self.country_module.detect_template(raw_text)
         tmpl_id = matched_template.template_id if matched_template else None
         doc_type = matched_template.document_type if matched_template else "commercial_register"
 
+        # Mark schema_status experimental for eg and ae
+        sch_id = "generic_v0_3"
+        sch_status = "experimental" if self.country in ("eg", "ae") else "stable"
+        if sch_status == "experimental" and "schema_experimental" not in reasons:
+            reasons = list(reasons) + ["schema_experimental"]
+
         return ExtractionResult(
             schema_version=SCHEMA_VERSION,
+            schema_id=sch_id,
+            schema_status=sch_status,
+            package_status=status,
             country=self.country,
             document_type=doc_type,
             template_id=tmpl_id,
@@ -762,3 +824,90 @@ class RegOCRPipeline:
             raw_text=raw_text,
             review=review_info,
         )
+
+    def process_files(self, file_paths: List[Union[str, Path]]) -> ExtractionResult:
+        """Process multiple files (e.g. 2 images of a package) in a single submission."""
+        t0 = time.perf_counter()
+        pages_raw_data: List[Dict[str, Any]] = []
+        preprocessing_reports: List[PreprocessingReport] = []
+        page_ocr_confs: List[float] = []
+        page_qualities: List[Dict[str, Any]] = []
+        raw_text_parts: List[str] = []
+        page_engines: List[str] = []
+
+        now_dt = datetime.datetime.now(datetime.timezone.utc)
+        sub_id = f"sub_{int(t0 * 1000)}"
+        doc_id = f"doc_{int(t0 * 1000)}"
+
+        for idx, fp in enumerate(file_paths):
+            pnum = idx + 1
+            fpath = Path(fp)
+            if not fpath.exists():
+                continue
+            cv_img = load_image(fpath)
+            fields, ocr_res, prep = self._process_ocr_page(cv_img, page_num=pnum)
+            pages_raw_data.append({"page_num": pnum, "raw_text": ocr_res.text, "words": ocr_res.words, "image": cv_img})
+            raw_text_parts.append(ocr_res.text)
+            preprocessing_reports.append(PreprocessingReport(**prep.report))
+            page_engines.append(ocr_res.engine)
+            page_ocr_confs.append(ocr_res.mean_confidence)
+            page_qualities.append(prep.quality)
+
+        raw_text = "\n\n--- PAGE BREAK ---\n\n".join(raw_text_parts)
+        agg_q_score = round(sum(float(q["score"]) for q in page_qualities) / max(len(page_qualities), 1), 2)
+        agg_q_issues = sorted(list({iss for q in page_qualities for iss in q["issues"]}))
+        quality_info = QualityInfo(score=agg_q_score, issues=agg_q_issues)
+        used_engine = "+".join(dict.fromkeys(page_engines)) if page_engines else self.engine
+        ocr_conf_mean = round(sum(page_ocr_confs) / len(page_ocr_confs), 4) if page_ocr_confs else None
+        duration_ms = int((time.perf_counter() - t0) * 1000)
+
+        if self.country == "sa" and hasattr(self.country_module, "process_package"):
+            pkg_res = self.country_module.process_package(pages_raw_data, quality_score=agg_q_score)
+            status = pkg_res["status"]
+            reasons = pkg_res["reasons"]
+            reupload_hint = pkg_res.get("reupload_hint")
+            review_info = ReviewInfo(
+                required=pkg_res["review"]["required"],
+                fields_to_review=pkg_res["review"]["fields_to_review"],
+            )
+            return ExtractionResult(
+                schema_version=SCHEMA_VERSION,
+                schema_id="sa_registration",
+                schema_status="stable",
+                package_status=pkg_res["package_status"],
+                country="sa",
+                document_type="sa_registration_package",
+                template_id=None,
+                document_id=doc_id,
+                submission_id=sub_id,
+                created_at=now_dt,
+                test_data=False,
+                status=status,
+                reasons=reasons,
+                reupload_hint=reupload_hint,
+                document=DocumentInfo(
+                    type="commercial_register",
+                    file_format="image",
+                    pdf_kind=None,
+                    pages=len(file_paths),
+                    page_used=1,
+                    pages_processed=list(range(1, len(file_paths) + 1)),
+                    quality=quality_info,
+                ),
+                preprocessing=preprocessing_reports,
+                extraction=ExtractionInfo(
+                    text_method="ocr",
+                    engine=used_engine,
+                    languages=["ar", "en"],
+                    ocr_confidence_mean=ocr_conf_mean,
+                    duration_ms=duration_ms,
+                ),
+                fields=None,
+                documents=pkg_res["documents"],
+                handoff=pkg_res["handoff"],
+                raw_text=raw_text,
+                review=review_info,
+            )
+
+        # Fallback for single file
+        return self.process_file(file_paths[0])

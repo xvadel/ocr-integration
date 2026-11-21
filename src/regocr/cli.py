@@ -77,44 +77,73 @@ def main():
 
     process = psutil.Process(os.getpid()) if args.profile else None
 
-    for f in files:
+    # For Saudi country with multiple files in directory, process as single package
+    if country == "sa" and len(files) > 1 and target.is_dir():
         try:
-            if args.profile:
-                cpu_t0 = time.process_time()
-                wall_t0 = time.perf_counter()
-                rss_start = process.memory_info().rss / (1024 * 1024)
-
-            res = pipeline.process_file(f)
-
-            if args.profile:
-                wall_ms = (time.perf_counter() - wall_t0) * 1000.0
-                cpu_ms = (time.process_time() - cpu_t0) * 1000.0
-                rss_end = process.memory_info().rss / (1024 * 1024)
-                sys.stderr.write(
-                    f"[PROFILE] {f.name}: Wall={wall_ms:.1f}ms, CPU={cpu_ms:.1f}ms, RSS={rss_end:.1f}MB (delta={rss_end - rss_start:+.1f}MB)\n"
-                )
-
-            doc_dict = res.model_dump(mode="json")
-            results[f.name] = doc_dict
-
+            res = pipeline.process_files(files)
+            doc_dict = res.model_dump(mode="json", exclude_none=True)
+            results["package_sa"] = doc_dict
             status = res.status.upper()
-            score = res.document.quality.score
-            reg_fld = res.fields.get("register_number")
-            comp_fld = res.fields.get("company_name")
-            reg_num = reg_fld.value if reg_fld and reg_fld.value is not None else "N/A"
-            comp = comp_fld.value if comp_fld and comp_fld.value is not None else "N/A"
-            rev = res.review.required
-
+            facts = res.handoff.get("facts", {}) if res.handoff else {}
+            comp = facts.get("company_name") or "N/A"
+            unif = facts.get("unified_national_number") or "N/A"
+            vat = facts.get("vat_registration_number") or "N/A"
             print(
-                f"[{status:<12}] {f.name:<28} | Score: {score:.2f} | "
-                f"Reg#: {str(reg_num):<8} | Company: {str(comp)[:25]} | Review: {rev}"
+                f"[{status:<12}] Saudi Package ({len(files)} files) | "
+                f"UNN: {str(unif):<10} | VAT: {str(vat):<15} | Company: {str(comp)[:25]}"
             )
             if res.reasons:
                 print(f"    Reasons: {', '.join(res.reasons)}")
             if res.reupload_hint:
                 print(f"    Hint: {res.reupload_hint}")
         except Exception as e:
-            print(f"[ERROR       ] {f.name:<28} | Error: {e}")
+            print(f"[ERROR       ] Saudi Package | Error: {e}")
+    else:
+        for f in files:
+            try:
+                if args.profile:
+                    cpu_t0 = time.process_time()
+                    wall_t0 = time.perf_counter()
+                    rss_start = process.memory_info().rss / (1024 * 1024)
+
+                res = pipeline.process_file(f)
+
+                if args.profile:
+                    wall_ms = (time.perf_counter() - wall_t0) * 1000.0
+                    cpu_ms = (time.process_time() - cpu_t0) * 1000.0
+                    rss_end = process.memory_info().rss / (1024 * 1024)
+                    sys.stderr.write(
+                        f"[PROFILE] {f.name}: Wall={wall_ms:.1f}ms, CPU={cpu_ms:.1f}ms, RSS={rss_end:.1f}MB (delta={rss_end - rss_start:+.1f}MB)\n"
+                    )
+
+                doc_dict = res.model_dump(mode="json", exclude_none=True)
+                results[f.name] = doc_dict
+
+                status = res.status.upper()
+                score = res.document.quality.score
+                if res.fields:
+                    reg_fld = res.fields.get("register_number")
+                    comp_fld = res.fields.get("company_name")
+                    reg_num = reg_fld.value if reg_fld and reg_fld.value is not None else "N/A"
+                    comp = comp_fld.value if comp_fld and comp_fld.value is not None else "N/A"
+                elif res.handoff and "facts" in res.handoff:
+                    facts = res.handoff["facts"]
+                    comp = facts.get("company_name") or "N/A"
+                    reg_num = facts.get("unified_national_number") or facts.get("vat_registration_number") or "N/A"
+                else:
+                    reg_num, comp = "N/A", "N/A"
+                rev = res.review.required
+
+                print(
+                    f"[{status:<12}] {f.name:<28} | Score: {score:.2f} | "
+                    f"Reg#: {str(reg_num):<8} | Company: {str(comp)[:25]} | Review: {rev}"
+                )
+                if res.reasons:
+                    print(f"    Reasons: {', '.join(res.reasons)}")
+                if res.reupload_hint:
+                    print(f"    Hint: {res.reupload_hint}")
+            except Exception as e:
+                print(f"[ERROR       ] {f.name:<28} | Error: {e}")
 
     if args.out:
         args.out.parent.mkdir(parents=True, exist_ok=True)
