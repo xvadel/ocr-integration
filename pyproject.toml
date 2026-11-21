@@ -24,7 +24,7 @@ dependencies = [
     "uvicorn>=0.30.0",
 ]
 
-[build-system]
+[project.scripts]`nregocr = "regocr.cli:main"`n`n[build-system]
 requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
