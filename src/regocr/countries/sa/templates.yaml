@@ -1,0 +1,41 @@
+country: sa
+templates:
+  SA_CR_CERT:
+    document_type: commercial_register
+    title_ar: "شهادة السجل التجاري السعودي"
+    keywords:
+      - "وزارة التجارة"
+      - "السجل التجاري"
+      - "الرقم الموحد"
+      - "المركز الرئيسي"
+    required_fields:
+      - company_name
+      - register_number
+      - issue_date
+    optional_fields:
+      - unified_register_number
+      - national_entity_number
+      - expiry_date
+      - legal_form
+      - capital
+      - manager
+    has_qr: true
+    qr_spec:
+      issuer: "Ministry of Commerce"
+
+  SA_VAT_CERT:
+    document_type: vat_certificate
+    title_ar: "شهادة تسجيل ضريبة القيمة المضافة"
+    keywords:
+      - "هيئة الزكاة والضريبة والجمارك"
+      - "ضريبة القيمة المضافة"
+      - "الرقم الضريبي"
+    required_fields:
+      - company_name
+      - tax_id
+      - issue_date
+    optional_fields:
+      - register_number
+    has_qr: true
+    qr_spec:
+      issuer: "ZATCA"

@@ -57,7 +57,7 @@ def main():
         )
         country = "eg"
 
-    pipeline = RegOCRPipeline(engine=args.engine, dpi=args.dpi)
+    pipeline = RegOCRPipeline(engine=args.engine, country=country, dpi=args.dpi)
 
     target = args.path
     if target.is_file():

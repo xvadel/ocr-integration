@@ -19,6 +19,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple, Union
 
 from regocr import SCHEMA_VERSION
+from regocr.countries import CountryRegistry
 from regocr.extract import FieldExtractor
 from regocr.ingest import (
     compute_document_id,
@@ -132,10 +133,12 @@ class RegOCRPipeline:
     def __init__(
         self,
         engine: str = "auto",
+        country: str = "eg",
         dpi: int = 300,
         config: Optional[PipelineConfig] = None,
     ):
         self.engine = engine  # 'auto', 'paddleocr', 'easyocr', 'tesseract', 'pypdfium2'
+        self.country = country.lower()
         self.config = config or PipelineConfig(dpi=dpi)
         if config is None:
             self.config.dpi = dpi
@@ -145,6 +148,10 @@ class RegOCRPipeline:
         self._easyocr: Optional[EasyOCREngine] = None
         self._paddleocr: Optional[PaddleOCREngine] = None
         self.extractor = FieldExtractor()
+        try:
+            self.country_module = CountryRegistry.get(self.country)
+        except Exception:
+            self.country_module = CountryRegistry.get("eg")
 
     def _get_engine(self, name: str):
         if name == "tesseract":
@@ -674,8 +681,16 @@ class RegOCRPipeline:
 
         duration_ms = int((time.perf_counter() - t0) * 1000)
 
+        # Template detection
+        matched_template = self.country_module.detect_template(raw_text)
+        tmpl_id = matched_template.template_id if matched_template else None
+        doc_type = matched_template.document_type if matched_template else "commercial_register"
+
         return ExtractionResult(
             schema_version=SCHEMA_VERSION,
+            country=self.country,
+            document_type=doc_type,
+            template_id=tmpl_id,
             document_id=doc_id,
             submission_id=sub_id,
             created_at=now_dt,

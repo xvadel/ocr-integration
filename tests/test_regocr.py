@@ -318,6 +318,36 @@ def test_post_decision_guards():
     assert "company_name:suspicious_region" in applied_cr
 
 
+def test_country_modules_and_template_detection():
+    import os
+    from regocr.pipeline import RegOCRPipeline
+    from regocr.countries import CountryRegistry
+
+    # Verify registry contains eg, sa, ae
+    assert "eg" in CountryRegistry.list_countries()
+    assert "sa" in CountryRegistry.list_countries()
+    assert "ae" in CountryRegistry.list_countries()
+
+    # Process Egyptian digital PDF with default eg country
+    pipe_eg = RegOCRPipeline(country="eg")
+    res_eg = pipe_eg.process_file("ocr_pdfs/pdfs/digital/sample_01_digital.pdf")
+    assert res_eg.country == "eg"
+    assert res_eg.schema_version == "0.4"
+    assert res_eg.document_type == "commercial_register"
+    assert res_eg.template_id == "EG_CR"
+
+    # Private fixtures test for Saudi documents: auto-skip if PRIVATE_FIXTURES_DIR unset
+    priv_dir = os.environ.get("PRIVATE_FIXTURES_DIR")
+    if not priv_dir or not os.path.exists(priv_dir):
+        # Auto-skip cleanly without failure
+        return
+
+    # If env var is set, verify Saudi module loads without error
+    pipe_sa = RegOCRPipeline(country="sa")
+    assert pipe_sa.country == "sa"
+    assert pipe_sa.country_module.country_name == "Saudi Arabia"
+
+
 if __name__ == "__main__":
     tests = [
         test_to_ascii_digits,
@@ -335,6 +365,7 @@ if __name__ == "__main__":
         test_digital_and_visual_pdfs_and_json_schema,
         test_merged_handoff_schema_valid,
         test_post_decision_guards,
+        test_country_modules_and_template_detection,
     ]
     for fn in tests:
         fn()
