@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Literal, Optional, Union
+from typing import Any, Literal, Optional, Union
 
 from pydantic import BaseModel, Field
 
@@ -36,11 +36,12 @@ class FieldResult(BaseModel):
     candidates: list[FieldCandidate] = Field(default_factory=list)
     page: int = 1
     bbox: Optional[list[float]] = None  # [x1, y1, x2, y2] normalized [0, 1]
-    status: Literal["ok", "suspect", "missing"] = "missing"
+    status: Literal["ok", "suspect", "missing", "unreadable", "invalid"] = "missing"
     grounded: bool = False
     issues: list[str] = Field(default_factory=list)
     code: Optional[str] = None  # e.g. legal_form code like 'llc'
     unit: Optional[str] = None  # e.g. 'EGP' for capital
+    calendar: Optional[str] = None  # 'gregorian' or 'hijri'
 
 
 # ---------------------------------------------------------------------------
@@ -114,9 +115,15 @@ class ReviewInfo(BaseModel):
 # ---------------------------------------------------------------------------
 
 class ExtractionResult(BaseModel):
-    """Complete extraction result for a single document submission."""
+    """Complete extraction result for a single document submission or multi-document package."""
 
-    schema_version: str = "0.3"
+    schema_version: str = "0.4"
+    schema_id: Optional[str] = None
+    schema_status: Optional[Literal["stable", "experimental"]] = "stable"
+    package_status: Optional[Literal["accepted", "needs_review", "rejected"]] = None
+    country: Optional[str] = "eg"
+    document_type: Optional[str] = "commercial_register"
+    template_id: Optional[str] = None
     document_id: str
     submission_id: str
     created_at: datetime
@@ -127,6 +134,8 @@ class ExtractionResult(BaseModel):
     document: DocumentInfo
     preprocessing: list[PreprocessingReport] = Field(default_factory=list)
     extraction: ExtractionInfo
-    fields: dict[str, FieldResult]
+    fields: Optional[dict[str, FieldResult]] = None
+    documents: Optional[list[dict[str, Any]]] = None
+    handoff: Optional[dict[str, Any]] = None
     raw_text: Optional[str] = None
     review: ReviewInfo

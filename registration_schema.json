@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://regocr.local/schemas/registration_schema.json",
-  "title": "RegOCR Commercial Register Extraction Output (v0.3)",
+  "title": "RegOCR Commercial Register Extraction Output (v0.4)",
   "description": "Strict output contract for RegOCR (Stage 1) aligned with src/regocr/models.py ExtractionResult.",
   "type": "object",
   "required": [
@@ -17,7 +17,15 @@
   ],
   "additionalProperties": false,
   "properties": {
-    "schema_version": { "const": "0.3" },
+    "schema_version": { "enum": ["0.3", "0.4"] },
+    "schema_id": { "type": ["string", "null"] },
+    "schema_status": { "type": ["string", "null"] },
+    "package_status": { "type": ["string", "null"] },
+    "country": { "type": ["string", "null"] },
+    "document_type": { "type": ["string", "null"] },
+    "template_id": { "type": ["string", "null"] },
+    "documents": { "type": ["array", "null"] },
+    "handoff": { "type": ["object", "null"] },
     "document_id": { "type": "string", "minLength": 8 },
     "submission_id": { "type": "string", "minLength": 4 },
     "created_at": { "type": "string", "format": "date-time" },
@@ -128,11 +136,12 @@
         "candidates": { "type": "array", "items": { "$ref": "#/$defs/candidate" } },
         "page": { "type": "integer", "minimum": 1 },
         "bbox": { "type": ["array", "null"], "items": { "type": "number" }, "minItems": 4, "maxItems": 4 },
-        "status": { "enum": ["ok", "suspect", "missing"] },
+        "status": { "enum": ["ok", "suspect", "missing", "unreadable", "invalid"] },
         "grounded": { "type": "boolean" },
         "issues": { "type": "array", "items": { "type": "string" } },
         "code": { "type": ["string", "null"] },
-        "unit": { "type": ["string", "null"] }
+        "unit": { "type": ["string", "null"] },
+        "calendar": { "type": ["string", "null"] }
       }
     }
   }

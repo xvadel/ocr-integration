@@ -19,6 +19,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple, Union
 
 from regocr import SCHEMA_VERSION
+from regocr.countries import CountryRegistry
 from regocr.extract import FieldExtractor
 from regocr.ingest import (
     compute_document_id,
@@ -51,6 +52,7 @@ from regocr.validate import (
     validate_document_status,
     validate_field_value,
 )
+from regocr.guards import apply_guards  # guard integration
 
 UNIQUE_ID_FIELDS = ("register_number", "unified_register_number", "national_entity_number", "tax_id")
 
@@ -65,6 +67,9 @@ class PipelineConfig:
     min_field_confidence: float = 0.68
     min_doc_quality_accept: float = 0.65
     min_doc_quality_reject: float = 0.35
+    early_exit_crop_verification: bool = True
+    crop_skip_min_confidence: float = 0.88
+    max_image_dimension: int = 2048
     preprocess: PreprocessConfig = field(default_factory=PreprocessConfig)
 
 
@@ -129,10 +134,12 @@ class RegOCRPipeline:
     def __init__(
         self,
         engine: str = "auto",
+        country: str = "eg",
         dpi: int = 300,
         config: Optional[PipelineConfig] = None,
     ):
         self.engine = engine  # 'auto', 'paddleocr', 'easyocr', 'tesseract', 'pypdfium2'
+        self.country = country.lower()
         self.config = config or PipelineConfig(dpi=dpi)
         if config is None:
             self.config.dpi = dpi
@@ -142,6 +149,10 @@ class RegOCRPipeline:
         self._easyocr: Optional[EasyOCREngine] = None
         self._paddleocr: Optional[PaddleOCREngine] = None
         self.extractor = FieldExtractor()
+        try:
+            self.country_module = CountryRegistry.get(self.country)
+        except Exception:
+            self.country_module = CountryRegistry.get("eg")
 
     def _get_engine(self, name: str):
         if name == "tesseract":
@@ -179,8 +190,8 @@ class RegOCRPipeline:
             # Do not waste CPU re-OCR on images that already failed the hard quality rejection gate
             return
 
-        easy_eng = self._get_engine("easyocr")
-        tess_eng = self._get_engine("tesseract")
+        easy_eng = None
+        tess_eng = None
 
         allowlist_map = {
             "register_number": "0123456789٠١٢٣٤٥٦٧٨٩",
@@ -218,9 +229,23 @@ class RegOCRPipeline:
                 p_raw_conf = fld.candidates[0].confidence if fld.candidates else (fld.confidence or 0.7)
                 observations.append((fld.value, fld.raw or str(fld.value), primary_engine, float(p_raw_conf), p_valid, p_issues))
 
+                # Early-exit optimization: if primary extraction is validated and high confidence,
+                # skip heavy secondary crop OCR passes
+                if (
+                    self.config.early_exit_crop_verification
+                    and p_valid
+                    and float(p_raw_conf) >= self.config.crop_skip_min_confidence
+                ):
+                    fld.engines_agree = True
+                    fld.status = "ok"
+                    fld.validated = True
+                    continue
+
             # 2. Secondary engine: EasyOCR cropped numeric recognize (works for BOTH Western & Arabic-Indic!)
             if primary_engine != "easyocr":
                 try:
+                    if easy_eng is None:
+                        easy_eng = self._get_engine("easyocr")
                     eff_bbox = crop_bbox
                     # For wide capital crops containing both currency text ("جنيه مصري") and digits,
                     # try readtext first (so currency letters aren't coerced into fake digits),
@@ -269,6 +294,8 @@ class RegOCRPipeline:
             any_indic = any(has_arabic_indic_digits(obs[1]) for obs in observations)
             if primary_engine != "tesseract" and not any_indic:
                 try:
+                    if tess_eng is None:
+                        tess_eng = self._get_engine("tesseract")
                     raw_t, conf_t = tess_eng.recognize_numeric_crop(
                         prep,
                         crop_bbox,
@@ -462,8 +489,8 @@ class RegOCRPipeline:
             except Exception:
                 pass
 
-        # Priority 2: ALWAYS run cropped second-opinion verification on numeric/ID fields (in auto mode)
-        if self.config.verify_numeric_fields and self.engine == "auto":
+        # Priority 2: Cropped second-opinion verification on numeric/ID fields (for Egyptian forms in auto mode)
+        if self.config.verify_numeric_fields and self.engine == "auto" and self.country != "sa":
             self._verify_numeric_fields_on_crops(
                 prep=prep,
                 fields=best_fields,
@@ -562,6 +589,7 @@ class RegOCRPipeline:
         is_pdf = file_path.suffix.lower() == ".pdf"
         t0 = time.perf_counter()
 
+        pages_raw_data: List[Dict[str, Any]] = []
         page_fields_list: List[Tuple[int, Dict[str, FieldResult]]] = []
         raw_text_parts: List[str] = []
         preprocessing_reports: List[PreprocessingReport] = []
@@ -595,6 +623,7 @@ class RegOCRPipeline:
                     fields, _ = self.extractor.extract_from_ocr(ocr_res, quality_score=0.98)
                     page_fields_list.append((pnum, fields))
                     raw_text_parts.append(txt)
+                    pages_raw_data.append({"page_num": pnum, "raw_text": txt, "words": ocr_res.words, "image": None})
                     page_methods.append("text_layer")
                     page_engines.append(pinfo["recommended_engine"])
                     page_qualities.append({"score": 0.98, "issues": []})
@@ -603,6 +632,7 @@ class RegOCRPipeline:
                     fields, ocr_res, prep = self._process_ocr_page(cv_img, page_num=pnum)
                     page_fields_list.append((pnum, fields))
                     raw_text_parts.append(ocr_res.text)
+                    pages_raw_data.append({"page_num": pnum, "raw_text": ocr_res.text, "words": ocr_res.words, "image": cv_img})
                     preprocessing_reports.append(PreprocessingReport(**prep.report))
                     page_methods.append("ocr")
                     page_engines.append(ocr_res.engine)
@@ -613,6 +643,7 @@ class RegOCRPipeline:
             fields, ocr_res, prep = self._process_ocr_page(cv_img, page_num=1)
             page_fields_list.append((1, fields))
             raw_text_parts.append(ocr_res.text)
+            pages_raw_data.append({"page_num": 1, "raw_text": ocr_res.text, "words": ocr_res.words, "image": cv_img})
             preprocessing_reports.append(PreprocessingReport(**prep.report))
             page_methods.append("ocr")
             page_engines.append(ocr_res.engine)
@@ -655,8 +686,116 @@ class RegOCRPipeline:
 
         duration_ms = int((time.perf_counter() - t0) * 1000)
 
+        # ------------------------------------------------------------
+        # Guard integration – run post‑extraction checks on the document
+        # guards.py expects plain dicts, not FieldResult objects, so we
+        # serialize fields to dicts before passing in and restore after.
+        # ------------------------------------------------------------
+        try:
+            # Serialize FieldResult objects → plain dicts
+            fields_as_dicts = {
+                k: v.model_dump(mode="python") if hasattr(v, "model_dump") else vars(v)
+                for k, v in merged_fields.items()
+            }
+            doc_guard = {
+                "status": status,
+                "reasons": reasons,
+                "fields": fields_as_dicts,
+                "raw_text": raw_text,
+                "document_type": "commercial_register",
+            }
+            doc_guard, guard_applied = apply_guards(doc_guard, expected_type="commercial_register")
+            # Unpack status/reasons/review – these are plain values, safe to overwrite
+            status = doc_guard.get("status", status)
+            reasons = doc_guard.get("reasons", reasons)
+            g_review = doc_guard.get("review")
+            if g_review and isinstance(g_review, dict):
+                review_info = ReviewInfo(
+                    required=g_review.get("required", review_info.required),
+                    fields_to_review=g_review.get("fields_to_review", review_info.fields_to_review),
+                )
+            # Merge guard field annotations (status, issues flags) back into FieldResult objects
+            for fname, fdict in doc_guard.get("fields", {}).items():
+                if fname in merged_fields and isinstance(fdict, dict):
+                    fr = merged_fields[fname]
+                    if fdict.get("status") and fdict["status"] != fr.status:
+                        fr.status = fdict["status"]
+                    if fdict.get("issues"):
+                        for issue in fdict["issues"]:
+                            if issue not in fr.issues:
+                                fr.issues.append(issue)
+        except Exception:
+            # Guards are advisory – never crash the pipeline
+            pass
+
+        # Saudi package processing branch
+        if self.country == "sa" and hasattr(self.country_module, "process_package"):
+            pkg_res = self.country_module.process_package(pages_raw_data, quality_score=agg_q_score)
+            status = pkg_res["status"]
+            reasons = pkg_res["reasons"]
+            reupload_hint = pkg_res.get("reupload_hint") or reupload_hint
+            review_info = ReviewInfo(
+                required=pkg_res["review"]["required"],
+                fields_to_review=pkg_res["review"]["fields_to_review"],
+            )
+            return ExtractionResult(
+                schema_version=SCHEMA_VERSION,
+                schema_id="sa_registration",
+                schema_status="stable",
+                package_status=pkg_res["package_status"],
+                country="sa",
+                document_type="sa_registration_package",
+                template_id=None,
+                document_id=doc_id,
+                submission_id=sub_id,
+                created_at=now_dt,
+                test_data=is_test_data,
+                status=status,
+                reasons=reasons,
+                reupload_hint=reupload_hint,
+                document=DocumentInfo(
+                    type="commercial_register",
+                    file_format=file_format,
+                    pdf_kind=pdf_kind,
+                    pages=pages_count,
+                    page_used=1,
+                    pages_processed=list(range(1, pages_count + 1)),
+                    quality=quality_info,
+                ),
+                preprocessing=preprocessing_reports,
+                extraction=ExtractionInfo(
+                    text_method=text_method,
+                    engine=used_engine,
+                    languages=["ar", "en"],
+                    ocr_confidence_mean=ocr_conf_mean,
+                    duration_ms=duration_ms,
+                ),
+                fields=None,
+                documents=pkg_res["documents"],
+                handoff=pkg_res["handoff"],
+                raw_text=raw_text,
+                review=review_info,
+            )
+
+        # Template detection for generic / Egyptian / UAE documents
+        matched_template = self.country_module.detect_template(raw_text)
+        tmpl_id = matched_template.template_id if matched_template else None
+        doc_type = matched_template.document_type if matched_template else "commercial_register"
+
+        # Mark schema_status experimental for eg and ae
+        sch_id = "generic_v0_3"
+        sch_status = "experimental" if self.country in ("eg", "ae") else "stable"
+        if sch_status == "experimental" and "schema_experimental" not in reasons:
+            reasons = list(reasons) + ["schema_experimental"]
+
         return ExtractionResult(
             schema_version=SCHEMA_VERSION,
+            schema_id=sch_id,
+            schema_status=sch_status,
+            package_status=status,
+            country=self.country,
+            document_type=doc_type,
+            template_id=tmpl_id,
             document_id=doc_id,
             submission_id=sub_id,
             created_at=now_dt,
@@ -685,3 +824,90 @@ class RegOCRPipeline:
             raw_text=raw_text,
             review=review_info,
         )
+
+    def process_files(self, file_paths: List[Union[str, Path]]) -> ExtractionResult:
+        """Process multiple files (e.g. 2 images of a package) in a single submission."""
+        t0 = time.perf_counter()
+        pages_raw_data: List[Dict[str, Any]] = []
+        preprocessing_reports: List[PreprocessingReport] = []
+        page_ocr_confs: List[float] = []
+        page_qualities: List[Dict[str, Any]] = []
+        raw_text_parts: List[str] = []
+        page_engines: List[str] = []
+
+        now_dt = datetime.datetime.now(datetime.timezone.utc)
+        sub_id = f"sub_{int(t0 * 1000)}"
+        doc_id = f"doc_{int(t0 * 1000)}"
+
+        for idx, fp in enumerate(file_paths):
+            pnum = idx + 1
+            fpath = Path(fp)
+            if not fpath.exists():
+                continue
+            cv_img = load_image(fpath)
+            fields, ocr_res, prep = self._process_ocr_page(cv_img, page_num=pnum)
+            pages_raw_data.append({"page_num": pnum, "raw_text": ocr_res.text, "words": ocr_res.words, "image": cv_img})
+            raw_text_parts.append(ocr_res.text)
+            preprocessing_reports.append(PreprocessingReport(**prep.report))
+            page_engines.append(ocr_res.engine)
+            page_ocr_confs.append(ocr_res.mean_confidence)
+            page_qualities.append(prep.quality)
+
+        raw_text = "\n\n--- PAGE BREAK ---\n\n".join(raw_text_parts)
+        agg_q_score = round(sum(float(q["score"]) for q in page_qualities) / max(len(page_qualities), 1), 2)
+        agg_q_issues = sorted(list({iss for q in page_qualities for iss in q["issues"]}))
+        quality_info = QualityInfo(score=agg_q_score, issues=agg_q_issues)
+        used_engine = "+".join(dict.fromkeys(page_engines)) if page_engines else self.engine
+        ocr_conf_mean = round(sum(page_ocr_confs) / len(page_ocr_confs), 4) if page_ocr_confs else None
+        duration_ms = int((time.perf_counter() - t0) * 1000)
+
+        if self.country == "sa" and hasattr(self.country_module, "process_package"):
+            pkg_res = self.country_module.process_package(pages_raw_data, quality_score=agg_q_score)
+            status = pkg_res["status"]
+            reasons = pkg_res["reasons"]
+            reupload_hint = pkg_res.get("reupload_hint")
+            review_info = ReviewInfo(
+                required=pkg_res["review"]["required"],
+                fields_to_review=pkg_res["review"]["fields_to_review"],
+            )
+            return ExtractionResult(
+                schema_version=SCHEMA_VERSION,
+                schema_id="sa_registration",
+                schema_status="stable",
+                package_status=pkg_res["package_status"],
+                country="sa",
+                document_type="sa_registration_package",
+                template_id=None,
+                document_id=doc_id,
+                submission_id=sub_id,
+                created_at=now_dt,
+                test_data=False,
+                status=status,
+                reasons=reasons,
+                reupload_hint=reupload_hint,
+                document=DocumentInfo(
+                    type="commercial_register",
+                    file_format="image",
+                    pdf_kind=None,
+                    pages=len(file_paths),
+                    page_used=1,
+                    pages_processed=list(range(1, len(file_paths) + 1)),
+                    quality=quality_info,
+                ),
+                preprocessing=preprocessing_reports,
+                extraction=ExtractionInfo(
+                    text_method="ocr",
+                    engine=used_engine,
+                    languages=["ar", "en"],
+                    ocr_confidence_mean=ocr_conf_mean,
+                    duration_ms=duration_ms,
+                ),
+                fields=None,
+                documents=pkg_res["documents"],
+                handoff=pkg_res["handoff"],
+                raw_text=raw_text,
+                review=review_info,
+            )
+
+        # Fallback for single file
+        return self.process_file(file_paths[0])

@@ -1,0 +1,20 @@
+country: ae
+templates:
+  AE_TRADE_LICENSE:
+    document_type: trade_license
+    title_ar: "رخصة تجارية - الإمارات"
+    keywords:
+      - "رخصة تجارية"
+      - "دائرة التنمية الاقتصادية"
+      - "رقم الرخصة"
+      - "تاريخ الانتهاء"
+    required_fields:
+      - company_name
+      - register_number
+      - issue_date
+    optional_fields:
+      - legal_form
+      - expiry_date
+      - activity
+      - manager
+    has_qr: true

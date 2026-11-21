@@ -1,0 +1,25 @@
+country: eg
+templates:
+  EG_CR:
+    document_type: commercial_register
+    title_ar: "مستخرج السجل التجاري المصري"
+    keywords:
+      - "السجل التجاري"
+      - "رقم القيد"
+      - "الشكل القانوني"
+      - "رأس المال"
+    required_fields:
+      - company_name
+      - register_number
+      - issue_date
+    optional_fields:
+      - legal_form
+      - expiry_date
+      - activity
+      - governorate
+      - address
+      - capital
+      - manager
+      - tax_id
+      - office
+    has_qr: false

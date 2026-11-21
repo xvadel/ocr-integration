@@ -1,0 +1,60 @@
+country: sa
+package_id: SA_REGISTRATION
+templates:
+  SA_CR_CERT:
+    document_type: commercial_register
+    title_ar: "شهادة السجل التجاري"
+    title_en: "Commercial Registration Certificate"
+    keywords:
+      - "وزارة التجارة"
+      - "السجل التجاري"
+      - "الرقم الوطني الموحد"
+      - "البيانات الأساسية للسجل التجاري"
+      - "نوع الكيان"
+      - "حالة السجل"
+    critical_fields:
+      - establishment_name
+      - unified_national_number
+      - issue_date
+    required_fields:
+      - entity_type
+      - register_status
+    optional_fields:
+      - qr_present
+      - qr_decoded
+      - qr_cross_check
+    has_qr: true
+    qr_spec:
+      issuer: "Ministry of Commerce"
+      cross_check_field: "unified_national_number"
+
+  SA_VAT_CERT:
+    document_type: vat_certificate
+    title_ar: "شهادة تسجيل في ضريبة القيمة المضافة"
+    title_en: "VAT Registration Certificate"
+    keywords:
+      - "هيئة الزكاة والضريبة والجمارك"
+      - "ضريبة القيمة المضافة"
+      - "الرقم المميز"
+      - "رقم التسجيل الضريبي"
+      - "تاريخ نفاذ التسجيل"
+      - "اسم المكلف"
+      - "vat registration certificate"
+      - "zatca"
+    critical_fields:
+      - taxpayer_name
+      - vat_registration_number
+      - effective_registration_date
+    required_fields:
+      - tax_period
+      - first_filing_due_date
+    optional_fields:
+      - tin
+      - certificate_no
+      - certificate_date
+      - taxpayer_address
+      - cr_license_id_no
+    ignore_regions:
+      - top_barcode
+      - bottom_qr_barcode
+      - footer_serials_and_urls

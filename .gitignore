@@ -15,9 +15,23 @@ out_*.json
 ocr_results/
 pdf_results/
 *_failures/
+eval_report*.json
 
 # Virtual environments & model caches
 .venv/
 .paddlex/
 .easyocr/
+
+# Private data / untracked local directories
+private_data/
+archive/
+
+# Specific private / ad-hoc document patterns
+*.bak
+*WhatsApp*
+*saudi-zyad*
+images/saudi-*
+vendra_private/
+*-real.*
+
 
