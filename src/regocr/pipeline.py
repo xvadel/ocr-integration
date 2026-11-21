@@ -52,6 +52,7 @@ from regocr.validate import (
     validate_document_status,
     validate_field_value,
 )
+from regocr.guards import apply_guards  # guard integration
 
 UNIQUE_ID_FIELDS = ("register_number", "unified_register_number", "national_entity_number", "tax_id")
 
@@ -680,6 +681,48 @@ class RegOCRPipeline:
         )
 
         duration_ms = int((time.perf_counter() - t0) * 1000)
+
+        # ------------------------------------------------------------
+        # Guard integration – run post‑extraction checks on the document
+        # guards.py expects plain dicts, not FieldResult objects, so we
+        # serialize fields to dicts before passing in and restore after.
+        # ------------------------------------------------------------
+        try:
+            # Serialize FieldResult objects → plain dicts
+            fields_as_dicts = {
+                k: v.model_dump(mode="python") if hasattr(v, "model_dump") else vars(v)
+                for k, v in merged_fields.items()
+            }
+            doc_guard = {
+                "status": status,
+                "reasons": reasons,
+                "fields": fields_as_dicts,
+                "raw_text": raw_text,
+                "document_type": "commercial_register",
+            }
+            doc_guard, guard_applied = apply_guards(doc_guard, expected_type="commercial_register")
+            # Unpack status/reasons/review – these are plain values, safe to overwrite
+            status = doc_guard.get("status", status)
+            reasons = doc_guard.get("reasons", reasons)
+            g_review = doc_guard.get("review")
+            if g_review and isinstance(g_review, dict):
+                review_info = ReviewInfo(
+                    required=g_review.get("required", review_info.required),
+                    fields_to_review=g_review.get("fields_to_review", review_info.fields_to_review),
+                )
+            # Merge guard field annotations (status, issues flags) back into FieldResult objects
+            for fname, fdict in doc_guard.get("fields", {}).items():
+                if fname in merged_fields and isinstance(fdict, dict):
+                    fr = merged_fields[fname]
+                    if fdict.get("status") and fdict["status"] != fr.status:
+                        fr.status = fdict["status"]
+                    if fdict.get("issues"):
+                        for issue in fdict["issues"]:
+                            if issue not in fr.issues:
+                                fr.issues.append(issue)
+        except Exception:
+            # Guards are advisory – never crash the pipeline
+            pass
 
         # Template detection
         matched_template = self.country_module.detect_template(raw_text)
