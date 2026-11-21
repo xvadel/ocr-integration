@@ -116,7 +116,10 @@ class ReviewInfo(BaseModel):
 class ExtractionResult(BaseModel):
     """Complete extraction result for a single document submission."""
 
-    schema_version: str = "0.3"
+    schema_version: str = "0.4"
+    country: Optional[str] = "eg"
+    document_type: Optional[str] = "commercial_register"
+    template_id: Optional[str] = None
     document_id: str
     submission_id: str
     created_at: datetime
